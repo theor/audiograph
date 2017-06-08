@@ -1,8 +1,12 @@
 import * as React from 'react';
-import ReactNodeGraph from 'react-node-graph'; 
 import './App.css';
+import * as SL from './Audio/SynthLib';
+import Controls from './View/containers/Controls';
 
 const logo = require('./logo.svg'); 
+
+var s = new SL.Synth();
+console.log(s);
 
 class App extends React.Component<{}, null> {
   render() {
@@ -15,7 +19,8 @@ class App extends React.Component<{}, null> {
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <ReactNodeGraph/>
+        <Controls volume={1.0}/>
+        
       </div>
     );
   }
