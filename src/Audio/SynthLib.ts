@@ -1,7 +1,7 @@
 export class Synth {
     whiteNoise: AudioBufferSourceNode;
     private ctx: AudioContext;
-    constructor(){
+    constructor() {
         this.ctx = new AudioContext();
 
         var bufferSize = 2 * this.ctx.sampleRate,
@@ -25,6 +25,4 @@ export class Synth {
     stop() {
         this.whiteNoise.disconnect(this.ctx.destination);
     }
-
-
 }

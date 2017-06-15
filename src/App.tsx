@@ -5,8 +5,8 @@ import Controls from './View/containers/Controls';
 
 const logo = require('./logo.svg'); 
 
-var s = new SL.Synth();
-console.log(s);
+new SL.Synth();
+// console.log(s);
 
 class App extends React.Component<{}, null> {
   render() {

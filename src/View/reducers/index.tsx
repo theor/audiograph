@@ -11,10 +11,9 @@ export function enthusiasm(state: StoreState, action: ReduxAction): StoreState {
     case Actions.IncrementEnthusiasm.type:
       return { ...state, enthusiasmLevel: state.enthusiasmLevel + 1 };
     default:
-      console.log(action.type);
-      break;
+      throw action.type;
+      // console.log(action.type);
     // case constants.DECREMENT_ENTHUSIASM:
     //   return { ...state, enthusiasmLevel: Math.max(1, state.enthusiasmLevel - 1) };
   }
-  return state;
 }
