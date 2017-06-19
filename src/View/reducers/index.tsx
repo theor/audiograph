@@ -11,6 +11,9 @@ export function enthusiasm(state: StoreState, action: ReduxAction): StoreState {
     case Actions.IncrementEnthusiasm.type:
       return { ...state, enthusiasmLevel: state.enthusiasmLevel + 1 };
     default:
+      if (String(action.type).startsWith('@@')) {
+        return state;
+      }
       throw action.type;
       // console.log(action.type);
     // case constants.DECREMENT_ENTHUSIASM:
