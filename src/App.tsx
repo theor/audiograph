@@ -2,6 +2,8 @@ import * as React from 'react';
 import './App.css';
 import * as SL from './Audio/SynthLib';
 import Controls from './View/containers/Controls';
+import { PlayerState } from './View/types/index';
+// import { PlayerState } from './View/types/index';
 // import * as Tone from 'tone';
 let Tone = require('tone');
 const logo = require('./logo.svg'); 
@@ -27,9 +29,8 @@ var kick = new Tone.MembraneSynth({
   },
   'octaves' : 10
 }).chain(drumCompress);
-var kickPart = new Tone.Loop(function(time:any){
-  kick.triggerAttackRelease('C2', '8n', time);
-}, '2n');
+// tslint:disable-next-line:no-any
+var kickPart = new Tone.Loop((time: any) => kick.triggerAttackRelease('C2', '8n', time), '2n');
 kickPart.start(0);
 
 var snare = new Tone.NoiseSynth({
@@ -45,12 +46,9 @@ var snare = new Tone.NoiseSynth({
     'sustain' : 0
   }
 }).chain(distortion, drumCompress);
-var snarePart = new Tone.Loop(function(time:any){
-  snare.triggerAttack(time);
-}, '2n');
+// tslint:disable-next-line:no-any
+var snarePart = new Tone.Loop((time: any) => snare.triggerAttack(time), '2n');
 snarePart.start('4n');
-
-
 
 Tone.Transport.start('+1');
 // Tone.Transport.loop = true;
@@ -71,7 +69,7 @@ class App extends React.Component<{}, null> {
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <Controls volume={1.0}/>
+        <Controls playState={PlayerState.Playing}/>
         
       </div>
     );

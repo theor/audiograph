@@ -7,17 +7,17 @@ import './index.css';
 
 import { createStore } from 'redux';
 import { enthusiasm } from './View/reducers/index';
-import { StoreState } from './View/types/index';
+import { StoreState, PlayerState } from './View/types/index';
 
 // tslint:disable-next-line:no-any
 var w: any = window;
 
 const store = createStore<StoreState>(
   enthusiasm, {
-    enthusiasmLevel: 1,
-    languageName: 'TypeScript',
+    state: PlayerState.Playing,
+    volume: 1
   },
-  w.___REDUX_DEVTOOLS_EXTENSION__ && w.___REDUX_DEVTOOLS_EXTENSION__());
+  w.__REDUX_DEVTOOLS_EXTENSION__ && w.__REDUX_DEVTOOLS_EXTENSION__());
 
 ReactDOM.render(
   <Provider store={store}>
