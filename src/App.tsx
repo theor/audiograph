@@ -4,8 +4,8 @@ import * as SL from './Audio/SynthLib';
 import Controls from './View/containers/Controls';
 import { PlayerState } from './View/types/index';
 // import { PlayerState } from './View/types/index';
-// import * as Tone from 'tone';
-let Tone = require('tone');
+import * as Tone from 'tone';
+// let Tone = require('tone');
 const logo = require('./logo.svg'); 
 
 // tslint:disable-next-line:no-unused-expression
