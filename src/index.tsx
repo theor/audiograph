@@ -9,14 +9,15 @@ import { createStore } from 'redux';
 import { enthusiasm } from './View/reducers/index';
 import { StoreState } from './View/types/index';
 
-var w: {} = window;
+// tslint:disable-next-line:no-any
+var w: any = window;
 
 const store = createStore<StoreState>(
   enthusiasm, {
     enthusiasmLevel: 1,
     languageName: 'TypeScript',
   },
-  w['__REDUX_DEVTOOLS_EXTENSION__'] && w['__REDUX_DEVTOOLS_EXTENSION__']());
+  w.___REDUX_DEVTOOLS_EXTENSION__ && w.___REDUX_DEVTOOLS_EXTENSION__());
 
 ReactDOM.render(
   <Provider store={store}>
