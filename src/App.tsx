@@ -1,17 +1,22 @@
 import * as React from 'react';
 import './App.css';
-import { NexusUICanvas, NxWidget } from './NexusUICanvas';
+import { NexusUICanvas } from './NexusUICanvas';
 
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph');
 
 const logo = require('./logo.svg');
 
+nx.skin('light-blue');
+nx.sendsTo(function(d) { debug(this, d) });
+
 class App extends React.Component<{}, null> {
+  componentDidMount(){
+      nx.add('dial', {name:"asd"});
+  }
   render() {
     let dial1 = (w:NxWidget) => {
-      w.on('*', (d:any) => {debug(d);});
-      nx.add('dial');
+      // w.on('*', function(d:any) {debug(this.type, this.canvasID, d);});
     };
     return (
       <div className="App">
