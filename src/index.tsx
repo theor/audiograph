@@ -5,6 +5,8 @@ import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 import * as Tone from 'tone';
 
+(localStorage as any).debug = 'NexusUICanvas,AudioGraph';
+
 var polySynth = new Tone.PolySynth(4, () => new Tone.Synth());
 polySynth.toMaster();
 Tone.Transport.start('+0.1');

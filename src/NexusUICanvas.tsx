@@ -75,7 +75,7 @@ export interface NexusUICanvasProps extends NexusUICanvasPropsBase {
 // when using React.
 (window as any).nx.globalWidgets = false;
 
-export default class NexusUICanvas extends Component<NexusUICanvasProps, {}> {
+export class NexusUICanvas extends Component<NexusUICanvasProps, {}> {
   mountedCanvas: HTMLCanvasElement;
   widget: NxWidget;
 
