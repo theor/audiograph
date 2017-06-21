@@ -1,11 +1,8 @@
+type WidgetType = string;
 
-interface nx {
+interface Nx {
     s:string;
+    add(t:WidgetType): void;
 }
 
-export = nx;
-export as namespace nx;
-
-declare namespace nx {
-    interface ASD {}
-}
+declare const nx: Nx;

@@ -5,13 +5,14 @@ import { NexusUICanvas, NxWidget } from './NexusUICanvas';
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph');
 
-// import * as nx from 'nexusUI';
-// let NUI = require('./nexusUI.js');
 const logo = require('./logo.svg');
 
 class App extends React.Component<{}, null> {
   render() {
-    let dial1 = (w:NxWidget) => {w.on('*', (d:any) => {debug(d)})};
+    let dial1 = (w:NxWidget) => {
+      w.on('*', (d:any) => {debug(d);});
+      nx.add('dial');
+    };
     return (
       <div className="App">
         <div className="App-header">
