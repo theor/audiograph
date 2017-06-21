@@ -1,15 +1,15 @@
 {
-  "name": "audiograph",
+  "name": "my-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/jest": "^19.2.4",
-    "@types/node": "^7.0.27",
-    "@types/react": "^15.0.26",
+    "@types/jest": "^20.0.1",
+    "@types/node": "^8.0.1",
+    "@types/react": "^15.0.30",
     "@types/react-dom": "^15.5.0",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
-    "react-node-graph": "^1.1.1"
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "tone": "^0.10.0"
   },
   "devDependencies": {
     "react-scripts-ts": "2.2.0"

@@ -1,8 +1,7 @@
 import * as React from 'react';
-import ReactNodeGraph from 'react-node-graph'; 
 import './App.css';
 
-const logo = require('./logo.svg'); 
+const logo = require('./logo.svg');
 
 class App extends React.Component<{}, null> {
   render() {
@@ -15,7 +14,6 @@ class App extends React.Component<{}, null> {
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <ReactNodeGraph/>
       </div>
     );
   }
