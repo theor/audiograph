@@ -20,7 +20,7 @@ export interface NxWidget extends Attributes {
   width: number;
   preMove: any;
   preRelease: any;
-  canvasID: any;
+  canvasID: string;
   colors: {
     accent: ColorString,
     fill: ColorString,
@@ -28,6 +28,7 @@ export interface NxWidget extends Attributes {
     black: ColorString,
     white: ColorString,
   };
+  on(event: string, callback: (this: NxWidget, data: {}) => void): void;
   init(): void;
   draw(): void;
   resize(w?: number, h?: number): void;
@@ -58,11 +59,10 @@ export interface NexusUICanvasPropsBase {
    * canvas element before it is transformed into an NX widget.
    */
   canvasAttrs?: Attributes;
-  /**
-   * A callback when the widget is created, and canvas mounted.
-   * 
-   * Remember to call widget.init() or widget.draw() if needed inside initWidget().
-   **/
+   /**
+    * A callback when the widget is created, and canvas mounted.
+    * Remember to call widget.init() or widget.draw() if needed inside initWidget().
+    */
   initWidget?: (widget: NxWidget) => void;
 }
 
@@ -79,9 +79,8 @@ export class NexusUICanvas extends Component<NexusUICanvasProps, {}> {
   mountedCanvas: HTMLCanvasElement;
   widget: NxWidget;
 
-  /**  @method destroy
-  Remove the widget object, canvas, and all related event listeners from the document.
-  */
+  /**  @method destroy Remove the widget object, canvas, and all related event listeners from the document.
+   */
   static destroyWidget(widget: NxWidget) {
     const nx = (window as any).nx;
     var type = nx.elemTypeArr.indexOf(widget.getName());
@@ -92,8 +91,8 @@ export class NexusUICanvas extends Component<NexusUICanvasProps, {}> {
     widget.canvas.onclick = null;
     widget.canvas.onmousemove = null;
     widget.canvas.onmouseoff = null;
-    document.removeEventListener("mousemove", widget.preMove, false);
-    document.removeEventListener("mouseup", widget.preRelease, false);
+    document.removeEventListener('mousemove', widget.preMove, false);
+    document.removeEventListener('mouseup', widget.preRelease, false);
 
     // Commented-out original code which is inappropriate for React (EM)
     // var elemToKill = document.getElementById(this.canvasID)
@@ -108,7 +107,6 @@ export class NexusUICanvas extends Component<NexusUICanvasProps, {}> {
       delete window[id];
     }
   }
-
 
   componentDidMount() {
     debug('componentDidMount() canvas.id: ', this.mountedCanvas.id, 'elm=', this.mountedCanvas);
@@ -192,8 +190,9 @@ export class NexusUICanvas extends Component<NexusUICanvasProps, {}> {
    * this.props.canvasAttrs
    */
   resizeIfNeeded() {
-    if(!this.props.canvasAttrs)
+    if (!this.props.canvasAttrs) {
         return;
+    }
     const attrs: Attributes = this.props.canvasAttrs;
     if (attrs.style) {
       if (attrs.style.width && attrs.style.height) {
