@@ -9,8 +9,8 @@ const logo = require('./logo.svg');
 
 class App extends React.Component<{}, null> {
   render() {
-    let dial1 = (w:NxWidget) => {
-      w.on('*', (d:any) => {debug(d);});
+    let dial1 = (w: NxWidget) => {
+      w.on('*', function(d: {}) {debug('%O %O', this, d); });
       nx.add('dial');
     };
     return (
@@ -22,9 +22,9 @@ class App extends React.Component<{}, null> {
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <NexusUICanvas type='dial' initWidget={dial1}/>
-        <NexusUICanvas type='string' initWidget={dial1}/>
-        <NexusUICanvas type='button' initWidget={dial1}/>
+        <NexusUICanvas type="dial" initWidget={dial1}/>
+        <NexusUICanvas type="string" initWidget={dial1}/>
+        <NexusUICanvas type="button" initWidget={dial1}/>
       </div>
 
     );
