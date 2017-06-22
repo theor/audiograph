@@ -1,6 +1,16 @@
 import * as React from 'react';
 import './App.css';
 import { NexusUICanvas, NxWidget } from './NexusUICanvas';
+import { Peer } from 'peerjs';
+
+var host = new Peer("host");
+var client = new Peer('client');
+host.on('connection', dc => { 
+  debug(dc);
+  dc.on('data', debug);
+ });
+
+client.connect('host').send("test");
 
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph');
