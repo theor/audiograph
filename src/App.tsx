@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './App.css';
-import { NexusUICanvas } from './NexusUICanvas';
+import { NexusUICanvas, NxWidget } from './NexusUICanvas';
 
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph');
