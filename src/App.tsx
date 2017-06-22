@@ -1,19 +1,36 @@
 import * as React from 'react';
 import './App.css';
 import { NexusUICanvas, NxWidget } from './NexusUICanvas';
-import { Peer } from 'peerjs';
-
-var host = new Peer("host");
-var client = new Peer('client');
-host.on('connection', dc => { 
-  debug(dc);
-  dc.on('data', debug);
- });
-
-client.connect('host').send("test");
+import Peer = require('peerjs');
 
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph');
+
+
+var host = new Peer({key: 'ovdtdu9kq9i19k9', debug:3});
+var hostId: string = "";
+host.on('open', id => { 
+  debug('host id: %O', id); hostId = id;
+
+  host.on('connection', dc => { 
+    debug('host connection %O', dc);
+    dc.on('open', () => {
+      debug('host open');
+      dc.on('data', data => { debug('host data: %O', data); });
+      dc.send('host');
+    });
+  });
+
+  var client = new Peer({key: 'ovdtdu9kq9i19k9', debug:3});
+  client.on('open', id => debug('client id: %O', id));
+  var dcc = client.connect(hostId);
+  dcc.on('data', data => debug('client data %O', data));
+  dcc.send("test");
+
+});
+
+
+
 
 const logo = require('./logo.svg');
 

@@ -3,6 +3,8 @@
 // Definitions by: Toshiya Nakakura <https://github.com/nakakura>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
+export = PeerJs.Peer;
+declare module PeerJs {
 
 type EventHandler = (event: Event) => void;
 
@@ -48,7 +50,7 @@ interface RTCDataChannel extends EventTarget {
     onclose: EventHandler;
 }
 
-declare namespace PeerJs{
+namespace PeerJs{
     interface PeerJSOption{
         key?: string;
         host?: string;
@@ -221,7 +223,7 @@ declare namespace PeerJs{
     }
 }
 
-declare var Peer: {
+var Peer: {
     prototype: RTCIceServer;
     /**
      * A peer can connect to other peers and listen for connections.
@@ -237,3 +239,5 @@ declare var Peer: {
      */
     new (options: PeerJs.PeerJSOption): PeerJs.Peer;
 };
+
+}

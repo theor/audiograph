@@ -6,7 +6,7 @@ import './index.css';
 import * as Tone from 'tone';
 
 // tslint:disable-next-line:no-any
-(localStorage as any).debug = 'NexusUICanvas,AudioGraph';
+(localStorage as any).debug = 'AudioGraph';
 
 var polySynth = new Tone.PolySynth(4, () => new Tone.Synth());
 polySynth.toMaster();
