@@ -46,21 +46,22 @@ class ConnectionManager {
     debug("host");
     var peer = new Peer({ key: 'ovdtdu9kq9i19k9', debug: 3 });
     this.state = { kind: 'connecting' };
+    this.update();
     peer.on('open', id => {
       this.state = { kind: 'host', id: id };
+      this.update();
     });
   }
 
-  constructor() {
+  constructor(private update: (() => void)) {
     this.state = { kind: 'none' };
   }
 }
 
-class App extends React.Component<{}, null> {
-  conn: ConnectionManager;
+class App extends React.Component<{}, ConnectionManager> {
   constructor(props: {}) {
     super(props);
-    this.conn = new ConnectionManager();
+    this.state = new ConnectionManager(() => this.forceUpdate());
   }
 
   componentDidMount() {
@@ -76,7 +77,7 @@ class App extends React.Component<{}, null> {
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Welcome to React</h2>
-          <Connection state={this.conn.state} onHost={() => this.conn.host()} />
+          <Connection state={this.state.state} onHost={() => this.state.host()} />
         </div>
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
