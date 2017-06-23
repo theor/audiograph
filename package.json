@@ -13,6 +13,7 @@
     "peerjs": "^0.3.14",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-router-dom": "^4.1.1",
     "tone": "^0.10.0",
     "typescript-tone": "github:theor/TypeScript"
   },
