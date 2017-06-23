@@ -1,14 +1,15 @@
 import * as React from 'react';
 
-interface None { kind: 'none' }
-interface Connecting { kind: 'connecting' }
-interface Host { kind: 'host', id: string; }
-interface Client { kind: 'client', id: string; hostId: string; }
-export type State = None | Connecting | Host | Client
+interface None { kind: 'none'; }
+interface Connecting { kind: 'connecting'; }
+interface Host { kind: 'host'; id: string; }
+interface Client { kind: 'client'; id: string; hostId: string; }
+export type State = None | Connecting | Host | Client;
 
 interface ConnectionProps { 
     state: State;
     onHost: () => void;
+    onDisconnect: () => void;
 }
 
 export const Connection: React.SFC<ConnectionProps> = (props) => {
@@ -29,14 +30,16 @@ export const Connection: React.SFC<ConnectionProps> = (props) => {
             break;
         case 'host':
             buttons = (
-                <button>Disconnect</button>
+                <button onClick={props.onDisconnect}>Disconnect</button>
             );
             break;
         case 'client':
             buttons = (
-                <button>Disconnect</button>
+                <button onClick={props.onDisconnect}>Disconnect</button>
             );
             break;
+        default:
+            buttons = <h1>Error: unknown state {JSON.stringify(props.state)}</h1>;
     }
     return (
         <div>

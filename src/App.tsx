@@ -3,11 +3,10 @@ import './App.css';
 import { Connection, State as ConnectionState } from './components/Connection';
 import { NexusUICanvas, NxWidget } from './NexusUICanvas';
 import Peer = require('peerjs');
+// import Peer from 'peerjs';
 
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph');
-
-
 
 // var host = new Peer({ key: 'ovdtdu9kq9i19k9', debug: 3 });
 // var hostId: string = "";
@@ -31,26 +30,33 @@ var debug = Debug('AudioGraph');
 
 // });
 
-
-
-
 const logo = require('./logo.svg');
 
 nx.skin('light-blue');
-nx.sendsTo(function (d) { debug(this, d) });
+nx.sendsTo(function (d: {}) { debug(this, d); });
 
 class ConnectionManager {
   public state: ConnectionState;
+  private peer: Peer;
 
   host() {
-    debug("host");
-    var peer = new Peer({ key: 'ovdtdu9kq9i19k9', debug: 3 });
+    debug('host');
+    this.peer = new Peer({ key: 'ovdtdu9kq9i19k9', debug: 3 });
     this.state = { kind: 'connecting' };
     this.update();
-    peer.on('open', id => {
+    this.peer.on('open', id => {
       this.state = { kind: 'host', id: id };
       this.update();
     });
+    this.peer.on('disconnected', () => {
+      this.state = { kind: 'none' };
+      this.update();
+    });
+  }
+
+  disconnect() {
+    this.peer.disconnect();
+    this.update();
   }
 
   constructor(private update: (() => void)) {
@@ -65,7 +71,7 @@ class App extends React.Component<{}, ConnectionManager> {
   }
 
   componentDidMount() {
-    nx.add('dial', { name: "asd" });
+    nx.add('dial', { name: 'asd' });
   }
 
   render() {
@@ -77,14 +83,18 @@ class App extends React.Component<{}, ConnectionManager> {
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Welcome to React</h2>
-          <Connection state={this.state.state} onHost={() => this.state.host()} />
+          <Connection
+            state={this.state.state}
+            onHost={() => this.state.host()}
+            onDisconnect={() => this.state.disconnect()}
+          />
         </div>
         <p className="App-intro">
           To get started, edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <NexusUICanvas type='dial' initWidget={dial1} />
-        <NexusUICanvas type='string' initWidget={dial1} />
-        <NexusUICanvas type='button' initWidget={dial1} />
+        <NexusUICanvas type="dial" initWidget={dial1} />
+        <NexusUICanvas type="string" initWidget={dial1} />
+        <NexusUICanvas type="button" initWidget={dial1} />
       </div>
 
     );
