@@ -1,9 +1,17 @@
 import * as React from 'react';
+
+import {
+  BrowserRouter as Router,
+  Route,
+  RouteComponentProps,
+  Link
+} from 'react-router-dom';
+
 import './App.css';
-import { Connection, State as ConnectionState } from './components/Connection';
-import { NexusUICanvas, NxWidget } from './NexusUICanvas';
-import Peer = require('peerjs');
 // import Peer from 'peerjs';
+
+import { Host } from './components/Connection';
+import { ConnectionManager } from './containers/ConnectionManager';
 
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph');
@@ -35,36 +43,42 @@ const logo = require('./logo.svg');
 nx.skin('light-blue');
 nx.sendsTo(function (d: {}) { debug(this, d); });
 
-class ConnectionManager {
-  public state: ConnectionState;
-  private peer: Peer;
+interface HostProps extends RouteComponentProps<{}> {
+  onHost: () => void;
+}
 
-  host() {
-    debug('host');
-    this.peer = new Peer({ key: 'ovdtdu9kq9i19k9', debug: 3 });
-    this.state = { kind: 'connecting' };
-    this.update();
-    this.peer.on('open', id => {
-      this.state = { kind: 'host', id: id };
-      this.update();
-    });
-    this.peer.on('disconnected', () => {
-      this.state = { kind: 'none' };
-      this.update();
-    });
-  }
+type JoinProps = RouteComponentProps<{ id: string }>;
 
-  disconnect() {
-    this.peer.disconnect();
-    this.update();
-  }
+const JoinPage: React.SFC<JoinProps> = (props: JoinProps) => {
+  return (
+    <span>JOIN {props.match.params.id}</span>
+  );
+};
 
-  constructor(private update: (() => void)) {
-    this.state = { kind: 'none' };
-  }
+function displayConnected(state: Readonly<ConnectionManager>): JSX.Element {
+  return (
+    <div>
+      <button onClick={() => state.disconnect()}>Disconnect</button>
+      <Link to={'/join/' + (state.state as Host).id}>Join session</Link>
+      <button onClick={() => state.disconnect()}>Disconnect</button>
+    </div>
+  );
 }
 
 class App extends React.Component<{}, ConnectionManager> {
+  HostPage: React.SFC<HostProps> = (props: HostProps) => {
+    let x = this.state.isConnected
+      ? displayConnected(this.state)
+      : <button onClick={() => this.state.host()}>Host</button>;
+
+    return (
+      <div>
+        {x}
+        <p>HOST {JSON.stringify(props)}</p>
+      </div>
+    );
+  }
+
   constructor(props: {}) {
     super(props);
     this.state = new ConnectionManager(() => this.forceUpdate());
@@ -75,28 +89,29 @@ class App extends React.Component<{}, ConnectionManager> {
   }
 
   render() {
-    let dial1 = (w: NxWidget) => {
-      // w.on('*', function(d:any) {debug(this.type, this.canvasID, d);});
-    };
+    // let dial1 = (w: NxWidget) => {
+    //   // w.on('*', function(d:any) {debug(this.type, this.canvasID, d);});
+    // };
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-          <Connection
-            state={this.state.state}
-            onHost={() => this.state.host()}
-            onDisconnect={() => this.state.disconnect()}
-          />
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <NexusUICanvas type="dial" initWidget={dial1} />
+      <Router>
+        <div className="App">
+          <div className="App-header">
+            <img src={logo} className="App-logo" alt="logo" />
+            <h2>Welcome to React</h2>
+            {/*<Connection
+              state={this.state.state}
+              onHost={() => this.state.host()}
+              onDisconnect={() => this.state.disconnect()}
+            />*/}
+          </div>
+          {/*<Route path="/join" component={JoinPage} />*/}
+          <Route path="/join/:id" component={JoinPage} />
+          <Route exact={true} path="/" component={this.HostPage} />
+          {/*<NexusUICanvas type="dial" initWidget={dial1} />
         <NexusUICanvas type="string" initWidget={dial1} />
-        <NexusUICanvas type="button" initWidget={dial1} />
-      </div>
-
+        <NexusUICanvas type="button" initWidget={dial1} />*/}
+        </div>
+      </Router>
     );
   }
 }
