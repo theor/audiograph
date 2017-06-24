@@ -39,7 +39,6 @@ interface Tone {
     notationToSeconds(notation: string, bpm?: number, timeSignature?: number): number;
     noteToFrequency(note: string): number;
     noteToMidi(note: string): number;
-    now(): number;
     optionsObject(values: Array<any>, keys: Array<string>, defaults?:Object): Object;
     receive(channelName: string, input?: AudioNode): Tone;
     samplesToSeconds(samples: number): number;
@@ -55,9 +54,13 @@ interface Tone {
     toSeconds(time?: number, now?: number): number;
 }
 
+// declare var Tone: Tone;
+
 export = Tone;
 export as namespace Tone;
 declare namespace Tone {
+    
+    function now(): number;
 
     var Abs: {
         new(): Tone.Abs;
@@ -744,17 +747,17 @@ declare namespace Tone {
         dispose(): Tone.Normalize;
     }
 
-    var Note: {
-        new(channel: any, time:Tone.Time, value: any): Tone.Note; //todo: channel: number|string, value: string|number|Object|Array
-    };
+    // var Note: {
+    //     new(channel: any, time:Tone.Time, value: any): Tone.Note; //todo: channel: number|string, value: string|number|Object|Array
+    // };
 
-    interface Note {
-        value: any; //todo: string | number | Object
-        parseScore(score: Object): Tone.Note[];
-        route(channel:any, callback?: (e: any)=>any): void; //todo: string | number
-        unroute(channel: any, callback?: (e: any)=>any): void; //todo: string | number;
-        dispose(): Tone.Note;
-    }
+    // interface Note {
+    //     value: any; //todo: string | number | Object
+    //     parseScore(score: Object): Tone.Note[];
+    //     route(channel:any, callback?: (e: any)=>any): void; //todo: string | number
+    //     unroute(channel: any, callback?: (e: any)=>any): void; //todo: string | number;
+    //     dispose(): Tone.Note;
+    // }
 
     var OmniOscillator: {
         new(frequency?: Tone.Frequency, type?: string): Tone.OmniOscillator; //TODO: Number || Object
@@ -830,6 +833,16 @@ declare namespace Tone {
         delayTime: Tone.Signal;
         dispose(): Tone.PingPongDelay;
     }
+
+    interface Part {
+        start(time:Tone.Time): void;
+    }
+
+    type Note = string;
+
+    var Part: {
+        new(callback:(time:Tone.Time, note: Tone.Note) => void, events: [[Tone.Time,Tone.Note]]):Loop;
+    };
 
     interface Loop {
         start(time:Tone.Time): void;
@@ -1112,12 +1125,11 @@ declare namespace Tone {
 
     interface Time{}
 
-    var Transport:  {
-        new(): Tone.Transport;
-        start(time:Tone.Time): Tone.TransportTime;
-    };
+    var Transport: Transport;
 
     interface Transport extends Tone {
+        new(): Tone.Transport;
+        start(time:Tone.Time): Tone.TransportTime;
         bpm: Tone.Signal;
         loop: boolean;
         loopEnd: Tone.Time;
@@ -1136,6 +1148,7 @@ declare namespace Tone {
         dispose(): Tone.Transport;
         nextBeat(subdivision?: string): number;
         pause(time: Tone.Time): Tone.Transport;
+        schedule(callback: (time:Tone.Time) => void, time: Tone.Time): number;
         setInterval(callback: (e: any)=>any, interval: Tone.Time): number;
         setLoopPoints(startPosition: Tone.Time, endPosition: Tone.Time): Tone.Transport;
         setTimeline(callback: (e: any)=>any, timeout: Tone.Time): number;
@@ -1148,7 +1161,7 @@ declare namespace Tone {
         unsyncSource(source: Tone.Source): Tone.Transport;
     }
 
-    interface TransportState {}
+    type TransportState = 'started' | 'stopped' | 'paused';
 
     var WaveShaper: {
         new(mapping: any, bufferLen?: number): Tone.WaveShaper; //TODO: change 'any' to 'Function | Array | number'

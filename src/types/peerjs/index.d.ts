@@ -10,14 +10,14 @@
          * @param id The brokering ID of the remote peer (their peer.id).
          * @param options for specifying details about Peer Connection
          */
-        connect(id: string, options?: PeerJs.PeerConnectOption): PeerJs.DataConnection;
+        connect(id: string, options?: Peer.PeerConnectOption): Peer.DataConnection;
         /**
          * Connects to the remote peer specified by id and returns a data connection.
          * @param id The brokering ID of the remote peer (their peer.id).
          * @param stream The caller's media stream
          * @param options Metadata associated with the connection, passed in by whoever initiated the connection.
          */
-        call(id: string, stream: any, options?: any): PeerJs.MediaConnection;
+        call(id: string, stream: any, options?: any): Peer.MediaConnection;
         /**
          * Calls the remote peer specified by id and returns a media connection.
          * @param event Event name
@@ -35,13 +35,13 @@
          * @param event Event name
          * @param cb Callback Function
          */
-        on(event: 'connection', cb: (dataConnection: PeerJs.DataConnection)=>void): void;
+        on(event: 'connection', cb: (dataConnection: Peer.DataConnection)=>void): void;
         /**
          * Emitted when a remote peer attempts to call you.
          * @param event Event name
          * @param cb Callback Function
          */
-        on(event: 'call', cb: (mediaConnection: PeerJs.MediaConnection)=>void): void;
+        on(event: 'call', cb: (mediaConnection: Peer.MediaConnection)=>void): void;
         /**
          * Emitted when the peer is destroyed and can no longer accept or create any new connections.
          * @param event Event name
@@ -111,13 +111,13 @@
     }
 
 declare var Peer: {
-    new (options: PeerJs.PeerJSOption): Peer;
-    new (id: string, options?: PeerJs.PeerJSOption): Peer;
+    new (options: Peer.PeerJSOption): Peer;
+    new (id: string, options?: Peer.PeerJSOption): Peer;
 }
 // export = PeerJs;
 export = Peer;
 
-declare namespace PeerJs {
+declare namespace Peer {
 // declare module PeerJs {
 
 type EventHandler = (event: Event) => void;

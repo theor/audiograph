@@ -12,6 +12,7 @@ import './App.css';
 
 import { Host } from './components/Connection';
 import { ConnectionManager } from './containers/ConnectionManager';
+import { TransportComponent } from './containers/Sound';
 
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph');
@@ -40,33 +41,77 @@ var debug = Debug('AudioGraph');
 
 const logo = require('./logo.svg');
 
-nx.skin('light-blue');
-nx.sendsTo(function (d: {}) { debug(this, d); });
-
 interface HostProps extends RouteComponentProps<{}> {
   onHost: () => void;
 }
 
-type JoinProps = RouteComponentProps<{ id: string }>;
+interface JoinProps extends RouteComponentProps<{ id: string }> {
+  conn: ConnectionManager;
+}
+class JoinPage extends React.Component<JoinProps, null> {
+  componentWillMount() {
+    let id = this.props.match.params.id;
+    if (this.props.conn.state.kind === 'none') {
+      this.props.conn.join(id);
+    }
+  }
 
-const JoinPage: React.SFC<JoinProps> = (props: JoinProps) => {
-  return (
-    <span>JOIN {props.match.params.id}</span>
-  );
-};
+  render() {
+    let id = this.props.match.params.id;
 
-function displayConnected(state: Readonly<ConnectionManager>): JSX.Element {
-  return (
-    <div>
-      <button onClick={() => state.disconnect()}>Disconnect</button>
-      <Link to={'/join/' + (state.state as Host).id}>Join session</Link>
-      <button onClick={() => state.disconnect()}>Disconnect</button>
-    </div>
-  );
+    var x: JSX.Element;
+    switch (this.props.conn.state.kind) {
+      case 'connecting':
+        x = <span>Connecting...</span>;
+        break;
+      case 'client':
+        x = <button onClick={() => this.props.conn.disconnect()}>Disconnect</button>;
+        break;
+      default:
+        x = <span>Unknown state: {this.props.conn.state.kind}</span>;
+        break;
+    }
+
+    return (
+      <div>
+        {x}
+        <span>JOIN {id} {this.props.conn.state.kind}</span>
+      </div>
+    );
+  }
 }
 
 class App extends React.Component<{}, ConnectionManager> {
-  HostPage: React.SFC<HostProps> = (props: HostProps) => {
+
+  constructor(props: {}) {
+    super(props);
+    this.state = new ConnectionManager(() => this.forceUpdate());
+
+    nx.skin('light-blue');
+    nx.sendsTo(function (d: {}) { debug(this, d); });
+  }
+
+  componentDidMount() {
+    nx.add('dial', { name: 'asd' });
+  }
+
+  render() {
+    return (
+      <Router>
+        <div className="App">
+          <div className="App-header">
+            <img src={logo} className="App-logo" alt="logo" />
+            <h2>Welcome to React</h2>
+          </div>
+          <Route path="/join/:id" render={this.joinPage} />
+          <Route exact={true} path="/" component={this.HostPage} />
+        </div>
+      </Router>
+    );
+  }
+
+  private joinPage: React.SFC<JoinProps> = (props: JoinProps) => <JoinPage conn={this.state} {...props} />;
+  private HostPage: React.SFC<HostProps> = (props: HostProps) => {
     let x = this.state.isConnected
       ? displayConnected(this.state)
       : <button onClick={() => this.state.host()}>Host</button>;
@@ -75,45 +120,28 @@ class App extends React.Component<{}, ConnectionManager> {
       <div>
         {x}
         <p>HOST {JSON.stringify(props)}</p>
+        <TransportComponent />
       </div>
     );
   }
-
-  constructor(props: {}) {
-    super(props);
-    this.state = new ConnectionManager(() => this.forceUpdate());
-  }
-
-  componentDidMount() {
-    nx.add('dial', { name: 'asd' });
-  }
-
-  render() {
-    // let dial1 = (w: NxWidget) => {
-    //   // w.on('*', function(d:any) {debug(this.type, this.canvasID, d);});
-    // };
-    return (
-      <Router>
-        <div className="App">
-          <div className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h2>Welcome to React</h2>
-            {/*<Connection
-              state={this.state.state}
-              onHost={() => this.state.host()}
-              onDisconnect={() => this.state.disconnect()}
-            />*/}
-          </div>
-          {/*<Route path="/join" component={JoinPage} />*/}
-          <Route path="/join/:id" component={JoinPage} />
-          <Route exact={true} path="/" component={this.HostPage} />
-          {/*<NexusUICanvas type="dial" initWidget={dial1} />
-        <NexusUICanvas type="string" initWidget={dial1} />
-        <NexusUICanvas type="button" initWidget={dial1} />*/}
-        </div>
-      </Router>
-    );
-  }
 }
+
+function displayConnected(state: Readonly<ConnectionManager>): JSX.Element {
+  return (
+    <div>
+      <button onClick={() => state.disconnect()}>Disconnect</button>
+      <Link to={'/join/' + (state.state as Host).id}>Join session
+      </Link>
+      <button onClick={() => state.disconnect()}>Disconnect</button>
+    </div>
+  );
+}
+
+// let dial1 = (w: NxWidget) => {
+//   // w.on('*', function(d:any) {debug(this.type, this.canvasID, d);});
+// };
+/*<NexusUICanvas type="dial" initWidget={dial1} />
+<NexusUICanvas type="string" initWidget={dial1} />
+<NexusUICanvas type="button" initWidget={dial1} />*/
 
 export default App;
