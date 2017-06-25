@@ -1,7 +1,47 @@
 import * as Tone from 'tone';
 import * as React from 'react';
+import * as Debug from 'debug';
+var debug = Debug('AudioGraph.Sound');
+
+type InstrumentId = string;
+
+type InstrumentCreator = () => Instrument;
+
+export interface Instrument { }
+
+export abstract class InstrumentTyped<T extends MessageBase> implements Instrument {
+    static f() { }
+    abstract applyMessage(m: T): void;
+    abstract mount(): void;
+    abstract unmount(): void;
+}
+
+// interface Message<T> { value: T; }
+
+interface MessageBase { }
+interface MessageSequence extends MessageBase { kind: 'sequence' }
+export interface MessageTimedSequence extends MessageBase { kind: 'timed' }
+type MessageType = MessageSequence | MessageTimedSequence
+class Drums implements InstrumentTyped<MessageSequence> {
+    applyMessage(m: MessageSequence) { };
+    mount(): void { }
+    unmount(): void { }
+}
+class Drums2 implements InstrumentTyped<MessageSequence> {
+    applyMessage(m: MessageSequence) { };
+    mount(): void { }
+    unmount(): void { }
+}
 
 export var SoundManager = new class {
+    library: Map<InstrumentId, InstrumentCreator>;
+    band: Map<string, Instrument>;
+    constructor() {
+        this.library = new Map();
+        this.library.set('drums', () => new Drums());
+        this.library.set('drums2', () => new Drums2());
+        this.band = new Map();
+    }
     playPause() {
         switch (Tone.Transport.state) {
             case 'started':
@@ -11,6 +51,53 @@ export var SoundManager = new class {
         }
     }
     state(): Tone.TransportState { return Tone.Transport.state; }
+
+    getInstrument(id: InstrumentId): Instrument {
+        return this.library[id];
+    }
+
+    pickInstrument(peer: string, instrId: InstrumentId) {
+        let prev = this.band.get(peer);
+        if (prev) {
+            // unmount instrument
+        }
+
+        this.band.set(peer, instrId);
+        let instr = this.getInstrument(instrId);
+        // if (instr instanceof InstrumentTyped<MessageSequence>)
+        // instr.applyMessage(null);
+        debug('picked instr: %O', instr);
+    }
+
+    private applyMessageInstrument<T extends MessageType>(m: T, i: Instrument) {
+        if (!i || !(i as InstrumentTyped<T>)) {
+            debug('null instr');
+            return;
+        }
+        if (!m || !(m as T)) {
+            debug('null m');
+            return;
+        }
+        (i as InstrumentTyped<T>).applyMessage(m);
+    }
+
+    applyMessage(m: MessageType, peerId: string) {
+        let instr = this.band.get(peerId);
+        if (!instr) {
+            debug('No instrument for peer "%s"', peerId);
+            return;
+        }
+
+        switch (m.kind) {
+            case 'sequence':
+                return this.applyMessageInstrument<MessageSequence>(m, instr);
+            case 'timed':
+                return this.applyMessageInstrument<MessageTimedSequence>(m, instr);
+            default: debug('Error');
+                break;
+        }
+
+    }
 }
 
 export const TransportComponent: React.SFC<{}> = (p: {}) => {
