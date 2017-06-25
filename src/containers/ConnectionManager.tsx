@@ -1,4 +1,5 @@
 import { State as ConnectionState } from '../components/Connection';
+import { SoundManager } from '../containers/Sound';
 import Peer = require('peerjs');
 
 import * as Debug from 'debug';
@@ -8,12 +9,21 @@ export class ConnectionManager {
     public state: ConnectionState;
     private peer: Peer;
     private connection: Peer.DataConnection;
+    private clients: Map<string, Peer.DataConnection>;
 
     host() {
         debug('host');
+        this.clients = new Map();
         this.peer = new Peer({ key: 'ovdtdu9kq9i19k9', debug: 3 });
         this.state = { kind: 'connecting' };
         this.update();
+        this.peer.on('connection', conn => {
+            this.clients.set(conn.peer, conn);
+            conn.on('close', () => this.clients.delete(conn.peer));
+            conn.on('data', data => {
+                debug('data: %s => %O', conn.peer, data);
+            });
+        });
         this.peer.on('open', id => {
             this.state = { kind: 'host', id: id };
             this.update();
@@ -51,7 +61,17 @@ export class ConnectionManager {
         });
     }
 
-    disconnect() {
+    sendAll() {
+        this.clients.forEach(conn => {
+            conn.send(SoundManager.state());
+        });
+    }
+
+    send() {
+        this.connection.send(SoundManager.state());
+    }
+
+    disconnect() {  
         this.peer.disconnect();
         this.update();
     }

@@ -65,7 +65,11 @@ class JoinPage extends React.Component<JoinProps, null> {
         x = <span>Connecting...</span>;
         break;
       case 'client':
-        x = <button onClick={() => this.props.conn.disconnect()}>Disconnect</button>;
+        x = <div>
+            <button onClick={() => this.props.conn.disconnect()}>Disconnect</button>
+            <button onClick={() => this.props.conn.send()}>Send</button>
+            </div>;
+
         break;
       default:
         x = <span>Unknown state: {this.props.conn.state.kind}</span>;
@@ -103,15 +107,15 @@ class App extends React.Component<{}, ConnectionManager> {
             <img src={logo} className="App-logo" alt="logo" />
             <h2>Welcome to React</h2>
           </div>
-          <Route path="/join/:id" render={this.joinPage} />
-          <Route exact={true} path="/" component={this.HostPage} />
+          <Route path="/join/:id" component={this.joinPage} />
+          <Route exact={true} path="/" component={this.hostPage} />
         </div>
       </Router>
     );
   }
 
   private joinPage: React.SFC<JoinProps> = (props: JoinProps) => <JoinPage conn={this.state} {...props} />;
-  private HostPage: React.SFC<HostProps> = (props: HostProps) => {
+  private hostPage: React.SFC<HostProps> = (props: HostProps) => {
     let x = this.state.isConnected
       ? displayConnected(this.state)
       : <button onClick={() => this.state.host()}>Host</button>;
@@ -132,7 +136,7 @@ function displayConnected(state: Readonly<ConnectionManager>): JSX.Element {
       <button onClick={() => state.disconnect()}>Disconnect</button>
       <Link to={'/join/' + (state.state as Host).id}>Join session
       </Link>
-      <button onClick={() => state.disconnect()}>Disconnect</button>
+      <button onClick={() => state.sendAll()}>Send all</button>
     </div>
   );
 }

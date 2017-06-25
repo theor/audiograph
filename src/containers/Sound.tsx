@@ -1,7 +1,7 @@
 import * as Tone from 'tone';
 import * as React from 'react';
 
-var SoundManager = new class {
+export var SoundManager = new class {
     playPause() {
         switch (Tone.Transport.state) {
             case 'started':
