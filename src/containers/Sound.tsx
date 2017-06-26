@@ -19,6 +19,10 @@ export var SoundManager = new class {
         this.library.set('drums', () => new Drums());
         this.library.set('drums2', () => new Drums2());
         this.band = new Map();
+        
+        Tone.Transport.loopStart = 0;
+        Tone.Transport.loopEnd = '1m';
+        Tone.Transport.loop = true;
     }
     playPause(): Tone.TransportState {
         switch (Tone.Transport.state) {

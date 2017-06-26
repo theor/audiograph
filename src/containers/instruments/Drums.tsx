@@ -18,9 +18,6 @@ export class Drums2 extends Core.InstrumentTyped<Core.MessageSequence> {
         debug('mount %s', this.id);
         var polySynth = new Tone.PolySynth(4, () => new Tone.Synth());
         polySynth.toMaster();
-        Tone.Transport.loopStart = 0;
-        Tone.Transport.loopEnd = '1m';
-        Tone.Transport.loop = true;
         let loop = new Tone.Part((t, n) => { polySynth.triggerAttackRelease(n, '8n', t); },
             [[0, 'C2'], ['0:1', 'C2'], ['0:2', 'E2'], ['0:3', 'F2']]);
 
