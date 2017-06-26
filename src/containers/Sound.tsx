@@ -10,7 +10,7 @@ type InstrumentCreator = () => Instrument;
 export interface Instrument { }
 
 export abstract class InstrumentTyped<T extends MessageBase> implements Instrument {
-    static f() { }
+    createUI(): JSX.Element { return <span>Unknown Instrument</span>}
     abstract applyMessage(m: T): void;
     abstract mount(): void;
     abstract unmount(): void;
@@ -22,12 +22,16 @@ interface MessageBase { }
 interface MessageSequence extends MessageBase { kind: 'sequence' }
 export interface MessageTimedSequence extends MessageBase { kind: 'timed' }
 type MessageType = MessageSequence | MessageTimedSequence
-class Drums implements InstrumentTyped<MessageSequence> {
+
+class Drums extends InstrumentTyped<MessageSequence> {
+    // createUI(): JSX.Element { return <br/> }
     applyMessage(m: MessageSequence) { };
     mount(): void { }
     unmount(): void { }
 }
-class Drums2 implements InstrumentTyped<MessageSequence> {
+class Drums2 extends InstrumentTyped<MessageSequence> {
+    createUI(): JSX.Element { return super.createUI(); }
+    
     applyMessage(m: MessageSequence) { };
     mount(): void { }
     unmount(): void { }
@@ -64,8 +68,6 @@ export var SoundManager = new class {
 
         this.band.set(peer, instrId);
         let instr = this.getInstrument(instrId);
-        // if (instr instanceof InstrumentTyped<MessageSequence>)
-        // instr.applyMessage(null);
         debug('picked instr: %O', instr);
     }
 
@@ -74,10 +76,12 @@ export var SoundManager = new class {
             debug('null instr');
             return;
         }
+
         if (!m || !(m as T)) {
             debug('null m');
             return;
         }
+        
         (i as InstrumentTyped<T>).applyMessage(m);
     }
 

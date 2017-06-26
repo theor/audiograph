@@ -13,6 +13,7 @@ import './App.css';
 import { Host } from './components/Connection';
 import { ConnectionManager } from './containers/ConnectionManager';
 import { TransportComponent } from './containers/Sound';
+import { Workspace } from './containers/Workspace';
 
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph');
@@ -68,6 +69,7 @@ class JoinPage extends React.Component<JoinProps, null> {
         x = <div>
             <button onClick={() => this.props.conn.disconnect()}>Disconnect</button>
             <button onClick={() => this.props.conn.send()}>Send</button>
+            <Workspace/>
             </div>;
 
         break;
