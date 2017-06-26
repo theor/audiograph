@@ -3,6 +3,9 @@ import { SoundManager } from '../containers/Sound';
 import Peer = require('peerjs');
 
 import * as Debug from 'debug';
+
+import { InstrumentId, MessageType, Message } from '../containers/BaseTypes';
+import * as Core from '../containers/BaseTypes';
 var debug = Debug('AudioGraph.Connection');
 
 export class ConnectionManager {
@@ -10,6 +13,29 @@ export class ConnectionManager {
     private peer: Peer;
     private connection: Peer.DataConnection;
     private clients: Map<string, Peer.DataConnection>;
+
+    readMessageOnHost(conn: Peer.DataConnection, data: any) {
+        debug('host data: %s => %O', conn.peer, data);
+        let m = data as Core.Message;
+        if (!m || !m.v)
+        {
+            debug('host received data is not a Message');
+            return;
+        }
+
+        switch (m.v.kind)
+        {
+            case 'addInstr':
+                SoundManager.setInstrument(m.senderId, m.v.instr);
+                break;
+            case 'remInstr':
+                debug('remInstr NIY');
+                // SoundManager.setInstrument(m.senderId, m.v.instr);
+                break;
+            default:
+                break;
+        }
+    }
 
     host() {
         debug('host');
@@ -20,9 +46,7 @@ export class ConnectionManager {
         this.peer.on('connection', conn => {
             this.clients.set(conn.peer, conn);
             conn.on('close', () => this.clients.delete(conn.peer));
-            conn.on('data', data => {
-                debug('data: %s => %O', conn.peer, data);
-            });
+            conn.on('data', (data) => this.readMessageOnHost(conn, data));
         });
         this.peer.on('open', id => {
             this.state = { kind: 'host', id: id };
@@ -63,12 +87,16 @@ export class ConnectionManager {
 
     sendAll() {
         this.clients.forEach(conn => {
-            conn.send(SoundManager.state());
+            conn.send(SoundManager.state);
         });
     }
 
-    send() {
-        this.connection.send(SoundManager.state());
+    send(m: MessageType, senderId: string) {
+        let msg: Message = {
+            v: m,
+            senderId
+        };
+        this.connection.send(msg);
     }
 
     disconnect() {  
@@ -86,4 +114,13 @@ export class ConnectionManager {
             : false;
     }
     public get isConnecting(): boolean { return this.state ? this.state.kind === 'connecting' : false; }
+
+    // client
+    sendAddInstrument(id: InstrumentId) {
+        this.send({ kind: 'addInstr', instr: id}, this.connection.peer);
+    }
+    
+    sendRemoveInstrument(id: InstrumentId) {
+        this.send({ kind: 'remInstr', instr: id}, this.connection.peer);
+    }
 }

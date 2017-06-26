@@ -66,11 +66,13 @@ class JoinPage extends React.Component<JoinProps, null> {
         x = <span>Connecting...</span>;
         break;
       case 'client':
-        x = <div>
+        x = (
+          <div>
             <button onClick={() => this.props.conn.disconnect()}>Disconnect</button>
-            <button onClick={() => this.props.conn.send()}>Send</button>
-            <Workspace/>
-            </div>;
+            {/*<button onClick={() => this.props.conn.send({})}>Send</button>*/}
+            <Workspace conn={this.props.conn} />
+          </div>
+        );
 
         break;
       default:
@@ -126,7 +128,7 @@ class App extends React.Component<{}, ConnectionManager> {
       <div>
         {x}
         <p>HOST {JSON.stringify(props)}</p>
-        <TransportComponent />
+        <TransportComponent forceUpdate={() => this.forceUpdate()}/>
       </div>
     );
   }
@@ -136,8 +138,7 @@ function displayConnected(state: Readonly<ConnectionManager>): JSX.Element {
   return (
     <div>
       <button onClick={() => state.disconnect()}>Disconnect</button>
-      <Link to={'/join/' + (state.state as Host).id}>Join session
-      </Link>
+      <Link to={'/join/' + (state.state as Host).id}>Join session</Link>: {(state.state as Host).id}
       <button onClick={() => state.sendAll()}>Send all</button>
     </div>
   );
