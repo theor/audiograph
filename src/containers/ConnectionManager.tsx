@@ -6,7 +6,7 @@ import * as Debug from 'debug';
 
 import { InstrumentId, MessageType, Message } from '../containers/BaseTypes';
 import * as Core from '../containers/BaseTypes';
-var debug = Debug('AudioGraph.Connection');
+var debug = Debug('AudioGraph:Connection');
 
 export class ConnectionManager {
     public state: ConnectionState;
@@ -14,23 +14,34 @@ export class ConnectionManager {
     private connection: Peer.DataConnection;
     private clients: Map<string, Peer.DataConnection>;
 
-    readMessageOnHost(conn: Peer.DataConnection, data: any) {
+    readMessageOnHost(conn: Peer.DataConnection, data: {}) {
         debug('host data: %s => %O', conn.peer, data);
         let m = data as Core.Message;
-        if (!m || !m.v)
-        {
+        if (!m || !m.v) {
             debug('host received data is not a Message');
             return;
         }
 
-        switch (m.v.kind)
-        {
+        switch (m.v.kind) {
             case 'addInstr':
                 SoundManager.setInstrument(m.senderId, m.v.instr);
                 break;
             case 'remInstr':
                 debug('remInstr NIY');
                 // SoundManager.setInstrument(m.senderId, m.v.instr);
+                break;
+            case 'sequence':
+                let instr = SoundManager.getBandInstrument(m.senderId);
+                if (!instr) {
+                    debug('could not find instr %s for message %O', m.senderId, m);
+                    return;
+                }
+                let tInstr = instr as Core.InstrumentTyped<Core.MessageSequence>;
+                if (!tInstr) {
+                    debug('wrong instrument type');
+                    return;
+                }
+                tInstr.applyMessage(m.v);
                 break;
             default:
                 break;
@@ -117,10 +128,10 @@ export class ConnectionManager {
 
     // client
     sendAddInstrument(id: InstrumentId) {
-        this.send({ kind: 'addInstr', instr: id}, this.connection.peer);
+        this.send({ kind: 'addInstr', instr: id}, this.peer.id);
     }
     
     sendRemoveInstrument(id: InstrumentId) {
-        this.send({ kind: 'remInstr', instr: id}, this.connection.peer);
+        this.send({ kind: 'remInstr', instr: id}, this.peer.id);
     }
 }

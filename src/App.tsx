@@ -15,8 +15,8 @@ import { ConnectionManager } from './containers/ConnectionManager';
 import { TransportComponent } from './containers/Sound';
 import { Workspace } from './containers/Workspace';
 
-import * as Debug from 'debug';
-var debug = Debug('AudioGraph');
+// import * as Debug from 'debug';
+// var debug = Debug('AudioGraph');
 
 // var host = new Peer({ key: 'ovdtdu9kq9i19k9', debug: 3 });
 // var hostId: string = "";
@@ -96,7 +96,7 @@ class App extends React.Component<{}, ConnectionManager> {
     this.state = new ConnectionManager(() => this.forceUpdate());
 
     nx.skin('light-blue');
-    nx.sendsTo(function (d: {}) { debug(this, d); });
+    // nx.sendsTo(function (d: {}) { debug(this, d); });
   }
 
   componentDidMount() {

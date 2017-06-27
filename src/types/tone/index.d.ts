@@ -836,6 +836,7 @@ declare namespace Tone {
 
     interface Part {
         start(time:Tone.Time): void;
+        stop(): void;
     }
 
     type Note = string;
@@ -846,6 +847,7 @@ declare namespace Tone {
 
     interface Loop {
         start(time:Tone.Time): void;
+        stop(): void;
     }
 
     var Loop: {
@@ -997,6 +999,10 @@ declare namespace Tone {
         dispose(): Tone.Select;
         select(which: number, time?: Tone.Time): Tone.Select;
     }
+
+    var Sequence: {
+        new(cb: (time:Tone.Time, note: number) => void, events: Tone.Note[] | number[], subdivision: Tone.Time): Tone.Part;
+    };
 
     module Signal {
         interface Unit{}

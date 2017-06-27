@@ -40,6 +40,14 @@ export interface NxWidget extends Attributes {
   getName(): string;
 }
 
+export interface NxMatrix extends NxWidget {
+  col: number;
+  row: number;
+  matrix: number[][];
+  erasing: boolean;
+  bpm: number;
+}
+
 export interface WidgetAttributes extends Attributes {
   val: any;
   colors?: {

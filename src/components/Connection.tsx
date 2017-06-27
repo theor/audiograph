@@ -3,7 +3,7 @@ import * as React from 'react';
 interface None { kind: 'none'; }
 interface Connecting { kind: 'connecting'; }
 export interface Host { kind: 'host'; id: string; }
-interface Client { kind: 'client'; id: string; hostId: string; }
+export interface Client { kind: 'client'; id: string; hostId: string; }
 export type State = None | Connecting | Host | Client;
 
 interface ConnectionProps { 

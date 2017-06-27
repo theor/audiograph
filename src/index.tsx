@@ -9,6 +9,7 @@ import * as Tone from 'tone';
 
 // tslint:disable-next-line:no-any
 (localStorage as any).debug = 'AudioGraph,AudioGraph.*,AudioGraph:*';
+(localStorage as any).debug = '*';
 
 // Tone.Transport.schedule(t => polySynth.triggerAttackRelease('C2', '8n', t), 2);
 // Tone.Transport.schedule(t => polySynth.triggerAttackRelease('C2', '8n', t, 2), '0:1');

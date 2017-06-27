@@ -2,8 +2,10 @@ import * as React from 'react';
 // import { NexusUICanvas } from '../NexusUICanvas';
 import { SoundManager, BandMember } from '../containers/Sound';
 
-import * as Debug from 'debug';
 import { ConnectionManager } from '../containers/ConnectionManager';
+import { Instrument } from '../containers/BaseTypes';
+
+import * as Debug from 'debug';
 var debug = Debug('AudioGraph:Workspace');
 
 interface State {
@@ -39,7 +41,7 @@ export class Workspace extends React.Component<Props, State> {
                     onChange={(e) => {
                         debug('%O: %s', e.target, e.target.value);
                         if (this.state.current) {
-                            BandMember.removeInstrument(e.target.value, this.props.conn);
+                            BandMember.removeInstrument(this.state.current, this.props.conn);
                         }
                         
                         this.setState({'current': e.target.value});
@@ -54,8 +56,20 @@ export class Workspace extends React.Component<Props, State> {
             </div>
         );
     }
+    private renderOneInstrument(i: Instrument) : JSX.Element {
+        return (
+            <div key={i.id}>
+                <h2>{i.id}</h2>
+                {i.createUI()}
+            </div>
+        );
+    }
     private renderWorkspace(): JSX.Element {
         
-        return <span/>;
+        return (
+            <div>
+                {BandMember.activeInstruments.map(this.renderOneInstrument)}
+            </div>
+        );
     }
 }

@@ -11,13 +11,18 @@ import * as Debug from 'debug';
 import { Drums, Drums2 } from '../containers/instruments/Drums';
 var debug = Debug('AudioGraph.Sound');
 
+interface Newable {
+    new (id: string, conn: ConnectionManager | undefined): Core.Instrument;
+}
+
 export var SoundManager = new class {
     library: Map<InstrumentId, Core.InstrumentCreator>;
     band: Map<string, Core.Instrument>;
     constructor() {
         this.library = new Map();
-        this.library.set('drums', () => new Drums());
-        this.library.set('drums2', () => new Drums2());
+        let add = (id: string, t: Newable) => this.library.set(id, conn => new t(id, conn));
+        add('drums', Drums);
+        add('drums2', Drums2);
         this.band = new Map();
         
         Tone.Transport.loopStart = 0;
@@ -34,14 +39,17 @@ export var SoundManager = new class {
     }
     get state(): Tone.TransportState { return Tone.Transport.state; }
 
+    getBandInstrument(peer: string): Core.Instrument | undefined {
+        return this.band.get(peer);
+    }
 
-    getInstrument(id: InstrumentId): Core.Instrument {
+    getInstrument(id: InstrumentId, conn: ConnectionManager | undefined): Core.Instrument {
         let instr = this.library.get(id);
         if (instr) {
-            return instr();
+            return instr(conn);
         }
         debug('could not find instrument "%s"', id);
-        return new Core.BlankInstr();
+        return new Core.BlankInstr('blank', conn);
     }
 
     setInstrument(peer: string, instrId: InstrumentId) {
@@ -51,10 +59,10 @@ export var SoundManager = new class {
             // unmount instrument
         }
 
-        let instr = this.getInstrument(instrId);
+        let instr = this.getInstrument(instrId, undefined);
 
         this.band.set(peer, instr);
-        debug('picked instr: %O', instr);
+        debug('picked instr: %O for peer %s', instr, peer);
         instr.mount();
     }
 
@@ -93,9 +101,10 @@ export var SoundManager = new class {
 
 export var BandMember = new class {
     private instruments: Core.Instrument[] = [];
+    get activeInstruments(): Readonly<Core.Instrument[]> { return this.instruments; }
 
     addInstrument(id: InstrumentId, conn: ConnectionManager) {
-        let instr = SoundManager.getInstrument(id);
+        let instr = SoundManager.getInstrument(id, conn);
         this.instruments.push(instr);
         conn.sendAddInstrument(id);
         // send mount message
@@ -121,7 +130,7 @@ export class TransportComponent extends React.Component<Props, { t: Tone.Transpo
         debug('render Transport, %s', this.state.t);
         let onClick = () => {
             let newState = SoundManager.playPause();
-            debug('setState Transport, %s', this.state.t,newState);
+            debug('setState Transport, %s', this.state.t, newState);
             this.setState({ t: newState });
         };
         return (
