@@ -6,6 +6,75 @@ import { NexusUICanvas, NxWidget, NxMatrix } from '../../NexusUICanvas';
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph.Sound');
 
+abstract class Timed extends Core.InstrumentTyped<Core.MessageTimed> {
+    applyMessage(m: Core.MessageTimed) {
+        debug('apply %O %i', m, this);
+        this.playNote(m.note, '+0.1');
+        // this.partition = m.notes;
+    }
+    
+    mount(): void {
+        debug('mount %s', this.id);
+    }
+    
+    unmount(): void {
+
+    }
+
+    protected abstract playNote(note: string, time: Tone.Time): void;
+}
+
+export class Osc extends Timed {
+    synth: Tone.MonoSynth;
+    mount(): void {
+        super.mount();
+        this.synth = new Tone.MonoSynth({
+			"portamento" : 0.01,
+			"oscillator" : {
+				"type" : "square"
+			},
+			"envelope" : {
+				"attack" : 0.005,
+				"decay" : 0.2,
+				"sustain" : 0.4,
+				"release" : 1.4,
+			},
+			"filterEnvelope" : {
+				"attack" : 0.005,
+				"decay" : 0.1,
+				"sustain" : 0.05,
+				"release" : 0.8,
+				"baseFrequency" : 300,
+				"octaves" : 4
+			}
+		});
+        this.synth.toMaster();
+
+    }
+    
+    protected playNote(note: string, time: Tone.Time): void {
+        this.synth.triggerAttackRelease(note, '16n');
+    }
+    
+
+    
+
+    createUI(): JSX.Element {
+        return (
+            <NexusUICanvas type="multitouch" initWidget={(w) => this.setup(w)} />
+        );
+    }
+    
+    private setup(w: NxWidget) {
+        (w as any).mode = 'matrix';
+        w.on('*', data => {
+            if((w as any).clicked) {
+                this.send({ kind: 'timed', note: 'C4' });
+            }
+        });
+    }
+}
+
 abstract class Sequencer extends Core.InstrumentTyped<Core.MessageSequence> {
     protected readonly times: number = 16;
     protected partition: Tone.Note[][];

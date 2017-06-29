@@ -8,7 +8,7 @@ import * as Core from '../containers/BaseTypes';
 import { InstrumentId } from '../containers/BaseTypes';
 
 import * as Debug from 'debug';
-import { Drums, Drums2 } from '../containers/instruments/Drums';
+import { Drums, Drums2, Osc } from '../containers/instruments/Drums';
 var debug = Debug('AudioGraph.Sound');
 
 interface Newable {
@@ -21,8 +21,9 @@ export var SoundManager = new class {
     constructor() {
         this.library = new Map();
         let add = (id: string, t: Newable) => this.library.set(id, conn => new t(id, conn));
-        add('drums', Drums);
-        add('drums2', Drums2);
+        add('TR808 Sequencer', Drums);
+        add('Osc sequencer', Drums2);
+        add('Free Osc', Osc);
         this.band = new Map();
         
         Tone.Transport.loopStart = 0;
@@ -77,7 +78,7 @@ export var SoundManager = new class {
             case 'sequence':
                 return this.applyMessageInstrument<Core.MessageSequence>(m, instr);
             case 'timed':
-                return this.applyMessageInstrument<Core.MessageTimedSequence>(m, instr);
+                return this.applyMessageInstrument<Core.MessageTimed>(m, instr);
             default:
                 debug('Error');
                 break;

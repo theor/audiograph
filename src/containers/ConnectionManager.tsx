@@ -30,7 +30,7 @@ export class ConnectionManager {
                 debug('remInstr NIY');
                 // SoundManager.setInstrument(m.senderId, m.v.instr);
                 break;
-            case 'sequence':
+            case 'sequence': {
                 let instr = SoundManager.getBandInstrument(m.senderId);
                 if (!instr) {
                     debug('could not find instr %s for message %O', m.senderId, m);
@@ -42,9 +42,25 @@ export class ConnectionManager {
                     return;
                 }
                 tInstr.applyMessage(m.v);
+            }
                 break;
-            default:
+            case 'timed': {
+                let instr = SoundManager.getBandInstrument(m.senderId);
+                if (!instr) {
+                    debug('could not find instr %s for message %O', m.senderId, m);
+                    return;
+                }
+                let tInstr = instr as Core.InstrumentTyped<Core.MessageTimed>;
+                if (!tInstr) {
+                    debug('wrong instrument type');
+                    return;
+                }
+                tInstr.applyMessage(m.v);
+            }
                 break;
+            // default:
+            //     debug('unknown message type: %s', m.v.kind);
+            //     break;
         }
     }
 
@@ -110,7 +126,7 @@ export class ConnectionManager {
         this.connection.send(msg);
     }
 
-    disconnect() {  
+    disconnect() {
         this.peer.disconnect();
         this.update();
     }
@@ -128,10 +144,10 @@ export class ConnectionManager {
 
     // client
     sendAddInstrument(id: InstrumentId) {
-        this.send({ kind: 'addInstr', instr: id}, this.peer.id);
+        this.send({ kind: 'addInstr', instr: id }, this.peer.id);
     }
-    
+
     sendRemoveInstrument(id: InstrumentId) {
-        this.send({ kind: 'remInstr', instr: id}, this.peer.id);
+        this.send({ kind: 'remInstr', instr: id }, this.peer.id);
     }
 }
