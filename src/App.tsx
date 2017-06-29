@@ -40,7 +40,7 @@ import { Workspace } from './containers/Workspace';
 
 // });
 
-const logo = require('./logo.svg');
+// const logo = require('./logo.svg');
 
 interface HostProps extends RouteComponentProps<{}> {
   onHost: () => void;
@@ -69,6 +69,7 @@ class JoinPage extends React.Component<JoinProps, null> {
         x = (
           <div>
             <button onClick={() => this.props.conn.disconnect()}>Disconnect</button>
+            <span>JOIN {id} {this.props.conn.state.kind}</span>
             {/*<button onClick={() => this.props.conn.send({})}>Send</button>*/}
             <Workspace conn={this.props.conn} />
           </div>
@@ -83,7 +84,6 @@ class JoinPage extends React.Component<JoinProps, null> {
     return (
       <div>
         {x}
-        <span>JOIN {id} {this.props.conn.state.kind}</span>
       </div>
     );
   }
@@ -100,7 +100,7 @@ class App extends React.Component<{}, ConnectionManager> {
   }
 
   componentDidMount() {
-    nx.add('dial', { name: 'asd' });
+    // nx.add('dial', { name: 'asd' });
   }
 
   render() {
@@ -108,8 +108,8 @@ class App extends React.Component<{}, ConnectionManager> {
       <Router>
         <div className="App">
           <div className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h2>Welcome to React</h2>
+            {/*<img src={logo} className="App-logo" alt="logo" />*/}
+            <h2>AudioGraph</h2>
           </div>
           <Route path="/join/:id" component={this.joinPage} />
           <Route exact={true} path="/" component={this.hostPage} />

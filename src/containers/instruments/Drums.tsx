@@ -25,7 +25,6 @@ abstract class Sequencer extends Core.InstrumentTyped<Core.MessageSequence> {
         for (var index = 0; index < this.times; index++) { indices.push(index); }
         this.part = new Tone.Sequence(
             (time: Tone.Time, col: number) => {
-                console.log(col);
                 if (!this.partition) {
                     return;
                 }
@@ -60,7 +59,7 @@ abstract class Sequencer extends Core.InstrumentTyped<Core.MessageSequence> {
         m.col = this.times;
         m.row = this.noteNames.length;
         m.init();
-        m.resize(400, 400);
+        m.resize(350, 400);
         m.draw();
         if (!m) {
             debug('not a matrix');

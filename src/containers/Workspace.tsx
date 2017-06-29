@@ -53,8 +53,6 @@ export class Workspace extends React.Component<Props, State> {
                     <option>-</option>
                     {Array.from(SoundManager.library.keys()).map(v => <option key={v}>{v}</option>)}
                 </select>
-                {/*<NexusUICanvas type="dial" />*/}
-                <span>Workspace</span>
                 {this.renderWorkspace()}
             </div>
         );
@@ -62,7 +60,7 @@ export class Workspace extends React.Component<Props, State> {
     private renderOneInstrument(i: Instrument) : JSX.Element {
         return (
             <div key={i.id}>
-                <h2>{i.id}</h2>
+                <span>{i.id}</span>
                 {i.createUI()}
             </div>
         );
