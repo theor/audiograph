@@ -40,14 +40,17 @@ export class Workspace extends React.Component<Props, State> {
                     value={this.state.current}
                     onChange={(e) => {
                         debug('%O: %s', e.target, e.target.value);
-                        if (this.state.current) {
+                        if (this.state.current && this.state.current != '-') {
                             BandMember.removeInstrument(this.state.current, this.props.conn);
                         }
-                        
-                        this.setState({'current': e.target.value});
-                        BandMember.addInstrument(e.target.value, this.props.conn);
+                        let newValue = e.target.value;
+                        this.setState({'current': newValue});
+                        if (newValue != '-') {
+                            BandMember.addInstrument(newValue, this.props.conn);
+                        }
                     }}
                 >
+                    <option>-</option>
                     {Array.from(SoundManager.library.keys()).map(v => <option key={v}>{v}</option>)}
                 </select>
                 {/*<NexusUICanvas type="dial" />*/}

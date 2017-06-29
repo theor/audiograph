@@ -6,18 +6,13 @@ import { NexusUICanvas, NxWidget, NxMatrix } from '../../NexusUICanvas';
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph.Sound');
 
-export class Drums extends Core.InstrumentTyped<Core.MessageSequence> {
-    // createUI(): JSX.Element { return <br/> }
-    applyMessage(m: Core.MessageSequence) { debug('apply'); }
-    mount(): void { debug('mount'); }
-    unmount(): void { debug('unmount'); }
-}
-export class Drums2 extends Core.InstrumentTyped<Core.MessageSequence> {
+abstract class Sequencer extends Core.InstrumentTyped<Core.MessageSequence> {
+    protected readonly times: number = 16;
+    protected partition: Tone.Note[][];
+    protected abstract get noteNames(): string[];
     private part: Tone.Loop;
-    private partition: Tone.Note[][];
-    private noteNames = ['F4', 'E4', 'C4', 'A4'];
-    private readonly times: number = 16;
-
+    protected abstract playNote(note: string, time: Tone.Time): void;
+    
     applyMessage(m: Core.MessageSequence) {
         debug('apply %O %i', m, this.times);
         this.partition = m.notes;
@@ -25,8 +20,7 @@ export class Drums2 extends Core.InstrumentTyped<Core.MessageSequence> {
     
     mount(): void {
         debug('mount %s', this.id);
-        var polySynth = new Tone.PolySynth(4, () => new Tone.Synth());
-        polySynth.toMaster();
+        
         let indices = [];
         for (var index = 0; index < this.times; index++) { indices.push(index); }
         this.part = new Tone.Sequence(
@@ -42,19 +36,14 @@ export class Drums2 extends Core.InstrumentTyped<Core.MessageSequence> {
 
                 for (var i = 0; i < column.length; i++) {
                         // slightly randomized velocities
-                        var vel = Math.random() * 0.5 + 0.5;
-                        polySynth.triggerAttackRelease(column[i], '32n', time, vel);
+                        this.playNote(column[i], time);
                 }
             }, indices, `${this.times}n`
         );
-        // this.part = new Tone.Sequence(
-        //     (t: Tone.Time, n: number) => {
-        //         polySynth.triggerAttackRelease(n, '8n', t);
-        //     },
-        //     ['C2', 'E2', 'C2', 'E2'], '4n');
 
         this.part.start(0);
     }
+    
     unmount(): void {
         debug('unmount %s', this.id);
         this.part.stop()
@@ -69,6 +58,7 @@ export class Drums2 extends Core.InstrumentTyped<Core.MessageSequence> {
     private setup(w: NxWidget) {
         let m = w as NxMatrix;
         m.col = this.times;
+        m.row = this.noteNames.length;
         m.init();
         m.resize(400, 400);
         m.draw();
@@ -92,5 +82,43 @@ export class Drums2 extends Core.InstrumentTyped<Core.MessageSequence> {
             }
             this.send({ kind: 'sequence', notes: notes, subdivision: `${this.times}n` });
         });
+    }
+}
+
+export class Drums extends Sequencer {
+    // createUI(): JSX.Element { return <br/> }
+    private player: Tone.MultiPlayer;
+    private mapping = {
+        'kick': './audio/505/kick.mp3',
+        'snare': './audio/505/snare.mp3',
+        'hh': './audio/505/hh.mp3',
+    }
+
+    protected get noteNames() { return Object.keys(this.mapping); }
+
+    protected playNote(note: string, time: Tone.Time) { 
+        this.player.start(note, time);
+    }
+
+    mount(): void {
+        this.player = new Tone.MultiPlayer({urls: this.mapping});
+        this.player.toMaster();
+        super.mount();
+    }
+}
+export class Drums2 extends Sequencer {
+    private polySynth: Tone.PolySynth;
+
+    protected get noteNames() { return ['F4', 'E4', 'C4', 'A4']; }
+
+    protected playNote(note: string, time: Tone.Time) { 
+                        var vel = Math.random() * 0.5 + 0.5;
+                        this.polySynth.triggerAttackRelease(note, '32n', time, vel);
+    }
+
+    mount(): void {
+        this.polySynth = new Tone.PolySynth(4, () => new Tone.Synth());
+        this.polySynth.toMaster();
+        super.mount();
     }
 }

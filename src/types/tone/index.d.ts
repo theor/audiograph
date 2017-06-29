@@ -697,6 +697,15 @@ declare namespace Tone {
         dispose(): Tone.MultibandSplit;
     }
 
+    type MultiPlayerOptions = { urls: { [index:string]: string }};
+    var MultiPlayer: {
+        new(buffers: string[] | MultiPlayerOptions | Tone.Buffer[]): Tone.MultiPlayer;
+    }
+
+    interface MultiPlayer extends Tone {
+        start(sample: number | string, time?: Tone.Time, offset?: Tone.Time, duration?: Tone.Time, pitch?: number, gain?: number): void;
+    }
+
     var Multiply: {
         new(value?: number): Tone.Multiply;
     };
