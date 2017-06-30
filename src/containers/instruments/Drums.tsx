@@ -128,7 +128,7 @@ abstract class Sequencer extends Core.InstrumentTyped<Core.MessageSequence> {
         m.col = this.times;
         m.row = this.noteNames.length;
         m.init();
-        m.resize(350, 400);
+        m.resize(350, 300);
         m.draw();
         if (!m) {
             debug('not a matrix');

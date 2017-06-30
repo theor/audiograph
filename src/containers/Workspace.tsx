@@ -59,8 +59,9 @@ export class Workspace extends React.Component<Props, State> {
     }
     private renderOneInstrument(i: Instrument) : JSX.Element {
         return (
-            <div key={i.id}>
-                <span>{i.id}</span>
+            <div key={i.id} className="touchui">
+                <p>{i.id}</p>
+
                 {i.createUI()}
             </div>
         );
