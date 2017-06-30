@@ -14,12 +14,14 @@ export interface MessageSequence extends MessageBase { kind: 'sequence'; notes: 
 export interface MessageTimed extends MessageBase { kind: 'timed'; note: Tone.Note; }
 export interface MessageAddInstrument extends MessageBase { kind: 'addInstr'; instr: InstrumentId; }
 export interface MessageRemoveInstrument extends MessageBase { kind: 'remInstr'; instr: InstrumentId; }
+export interface MessageSync extends MessageBase { kind: 'sync'; t: Date; }
 
 export type MessageType =
     MessageSequence |
     MessageTimed |
     MessageAddInstrument |
-    MessageRemoveInstrument;
+    MessageRemoveInstrument |
+    MessageSync;
 
 export interface Message {
     v: MessageType;
@@ -53,14 +55,14 @@ export abstract class InstrumentTyped<T extends MessageBase> implements Instrume
     abstract unmount(): void;
     
     send(m: T): void {
-        let mm = m as any as MessageType;
+        let mm = m as {} as MessageType;
         debug('double convert message: %O -> %O', m, mm);
         this.conn!.send(mm, (this.conn!.state as Client).id);
     }
 }
 export class BlankInstr extends InstrumentTyped<MessageSequence> {
     // createUI(): JSX.Element { return <br/> }
-    applyMessage(m: MessageSequence) {}
-    mount(): void {}
-    unmount(): void {}
+    applyMessage(m: MessageSequence) { debug('blank applyMessage'); }
+    mount(): void { debug('blank mount'); }
+    unmount(): void { debug('blank unmount'); }
 }

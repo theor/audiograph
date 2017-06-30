@@ -1150,6 +1150,7 @@ declare namespace Tone {
         loopEnd: Tone.Time;
         loopStart: Tone.Time;
         position: string;
+        seconds: number;
         state: TransportState;
         swing: number;
         swingSubdivision: Tone.Time;

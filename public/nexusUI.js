@@ -1148,6 +1148,10 @@ widget.prototype.makeRoomForLabel = function() {
     ```
 */
 exports.findPosition = function(element) {
+	// return {
+	// 	top: 0,
+	// 	left: 0
+	// };
   var body = document.body,
       win = document.defaultView,
       docElem = document.documentElement,

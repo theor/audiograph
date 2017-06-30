@@ -69,7 +69,7 @@ class JoinPage extends React.Component<JoinProps, null> {
         x = (
           <div>
             <button onClick={() => this.props.conn.disconnect()}>Disconnect</button>
-            <span>JOIN {id} {this.props.conn.state.kind}</span>
+            <span>{id}</span>
             {/*<button onClick={() => this.props.conn.send({})}>Send</button>*/}
             <Workspace conn={this.props.conn} />
           </div>
@@ -83,6 +83,7 @@ class JoinPage extends React.Component<JoinProps, null> {
 
     return (
       <div>
+        <TransportComponent forceUpdate={() => this.forceUpdate()}/>
         {x}
       </div>
     );
@@ -128,7 +129,7 @@ class App extends React.Component<{}, ConnectionManager> {
       <div>
         {x}
         <p>HOST {JSON.stringify(props)}</p>
-        <TransportComponent forceUpdate={() => this.forceUpdate()}/>
+        <TransportComponent forceUpdate={() => this.forceUpdate()} conn={this.state}/>
       </div>
     );
   }

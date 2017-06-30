@@ -1,8 +1,6 @@
 import * as Tone from 'tone';
 import * as React from 'react';
 
-(document as any).Tone2 = Tone;
-
 import { ConnectionManager } from '../containers/ConnectionManager';
 import * as Core from '../containers/BaseTypes';
 import { InstrumentId } from '../containers/BaseTypes';
@@ -25,7 +23,7 @@ export var SoundManager = new class {
         add('Osc sequencer', Drums2);
         add('Free Osc', Osc);
         this.band = new Map();
-        
+
         Tone.Transport.loopStart = 0;
         Tone.Transport.loopEnd = '1m';
         Tone.Transport.loop = true;
@@ -122,10 +120,15 @@ export var BandMember = new class {
     }
 };
 
-interface Props { forceUpdate: () => void; }
-export class TransportComponent extends React.Component<Props, { t: Tone.TransportState }> {
+interface Props { forceUpdate: () => void; conn?: Readonly<ConnectionManager>; }
+export class TransportComponent extends React.Component<Props, { t: Tone.TransportState, time: number }> {
     componentWillMount() {
-        this.state = { t: SoundManager.state };
+        this.state = { t: SoundManager.state, time: 0 };
+        requestAnimationFrame(() => this.tick());
+    }
+    shouldComponentUpdate(nextProps: Props, nextState: { t: Tone.TransportState }) {
+        // TODO: maybe optimize in case only props.canvasAttrs changes ...
+        return true;
     }
     render() {
         debug('render Transport, %s', this.state.t);
@@ -133,14 +136,23 @@ export class TransportComponent extends React.Component<Props, { t: Tone.Transpo
             let newState = SoundManager.playPause();
             debug('setState Transport, %s', this.state.t, newState);
             this.setState({ t: newState });
+            if (this.props.conn) {
+                this.props.conn.syncAll();
+            }
         };
         return (
             <div>
+                {this.state.time.toFixed(2)}
                 <span>state: {this.state.t}</span>
+                {this.props.conn ?
                 <button onClick={onClick}>
                     {this.state.t === 'started' ? 'Pause' : 'Play'}
-                </button>
+                </button> : undefined}
             </div>
         );
     }
-};
+    tick() {
+        this.setState({ t: this.state.t, time: Tone.Transport.seconds });
+        requestAnimationFrame(() => this.tick());
+    }
+}

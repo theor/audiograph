@@ -30,37 +30,39 @@ export class ConnectionManager {
                 debug('remInstr NIY');
                 // SoundManager.setInstrument(m.senderId, m.v.instr);
                 break;
-            case 'sequence': {
-                let instr = SoundManager.getBandInstrument(m.senderId);
-                if (!instr) {
-                    debug('could not find instr %s for message %O', m.senderId, m);
-                    return;
+            case 'sequence':
+                {
+                    let instr = SoundManager.getBandInstrument(m.senderId);
+                    if (!instr) {
+                        debug('could not find instr %s for message %O', m.senderId, m);
+                        return;
+                    }
+                    let tInstr = instr as Core.InstrumentTyped<Core.MessageSequence>;
+                    if (!tInstr) {
+                        debug('wrong instrument type');
+                        return;
+                    }
+                    tInstr.applyMessage(m.v);
                 }
-                let tInstr = instr as Core.InstrumentTyped<Core.MessageSequence>;
-                if (!tInstr) {
-                    debug('wrong instrument type');
-                    return;
-                }
-                tInstr.applyMessage(m.v);
-            }
                 break;
-            case 'timed': {
-                let instr = SoundManager.getBandInstrument(m.senderId);
-                if (!instr) {
-                    debug('could not find instr %s for message %O', m.senderId, m);
-                    return;
+            case 'timed':
+                {
+                    let instr = SoundManager.getBandInstrument(m.senderId);
+                    if (!instr) {
+                        debug('could not find instr %s for message %O', m.senderId, m);
+                        return;
+                    }
+                    let tInstr = instr as Core.InstrumentTyped<Core.MessageTimed>;
+                    if (!tInstr) {
+                        debug('wrong instrument type');
+                        return;
+                    }
+                    tInstr.applyMessage(m.v);
                 }
-                let tInstr = instr as Core.InstrumentTyped<Core.MessageTimed>;
-                if (!tInstr) {
-                    debug('wrong instrument type');
-                    return;
-                }
-                tInstr.applyMessage(m.v);
-            }
                 break;
-            // default:
-            //     debug('unknown message type: %s', m.v.kind);
-            //     break;
+            default:
+                debug('unknown message type: %s', m.v.kind);
+                break;
         }
     }
 
@@ -92,9 +94,7 @@ export class ConnectionManager {
         this.update();
         this.connection = this.peer.connect(id);
         let self = this;
-        this.connection.on('data', data => {
-            debug('data: %O', data);
-        });
+        this.connection.on('data', data => { this.readMessageOnClient(data); });
         this.connection.on('error', data => {
             debug('error: %O', data);
             this.state = { kind: 'none' };
@@ -109,6 +109,17 @@ export class ConnectionManager {
             this.state = { kind: 'none' };
             debug('close');
             self.update();
+        });
+    }
+
+    readMessageOnClient(data: {}) {
+        debug('data: %O', data);
+
+    }
+
+    syncAll() {
+        this.clients.forEach(conn => {
+            conn.send(SoundManager.state);
         });
     }
 
