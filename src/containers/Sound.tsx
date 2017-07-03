@@ -1,16 +1,16 @@
 import * as Tone from 'tone';
 import * as React from 'react';
 
-import { ConnectionManager } from './ConnectionManager';
+import { ConnectionClient } from './ConnectionManager';
 import * as Core from './BaseTypes';
 import { InstrumentId } from './BaseTypes';
+import { Drums, Drums2, Osc } from './instruments';
 
 import * as Debug from 'debug';
-import { Drums, Drums2, Osc } from './instruments';
 var debug = Debug('AudioGraph.Sound');
 
 interface Newable {
-    new (id: string, conn: ConnectionManager | undefined): Core.Instrument;
+    new (id: string, conn: Readonly<ConnectionClient> | undefined): Core.Instrument;
 }
 
 export var SoundManager = new class {
@@ -42,7 +42,7 @@ export var SoundManager = new class {
         return this.band.get(peer);
     }
 
-    getInstrument(id: InstrumentId, conn: ConnectionManager | undefined): Core.Instrument {
+    getInstrument(id: InstrumentId, conn: Readonly<ConnectionClient> | undefined): Core.Instrument {
         let instr = this.library.get(id);
         if (instr) {
             return instr(conn);

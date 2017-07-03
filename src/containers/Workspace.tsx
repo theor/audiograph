@@ -3,7 +3,7 @@ import * as React from 'react';
 import { SoundManager } from './Sound';
 import { BandMember } from './BandMember';
 
-import { ConnectionManager } from '../containers/ConnectionManager';
+import { ConnectionClient } from '../containers/ConnectionManager';
 import { Instrument } from '../containers/BaseTypes';
 
 import * as Debug from 'debug';
@@ -14,7 +14,7 @@ interface State {
 }
 
 interface Props {
-    conn: ConnectionManager;
+    conn: Readonly<ConnectionClient>;
 }
 
 export class Workspace extends React.Component<Props, State> {

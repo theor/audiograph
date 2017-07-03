@@ -8,11 +8,56 @@ import { InstrumentId, MessageType, Message } from '../containers/BaseTypes';
 import * as Core from '../containers/BaseTypes';
 var debug = Debug('AudioGraph:Connection');
 
-export class ConnectionManager {
+abstract class BaseConnection {
     public state: ConnectionState;
-    private peer: Peer;
-    private connection: Peer.DataConnection;
+    protected peer: Peer;
+
+    constructor(protected update: (() => void)) {
+        this.state = { kind: 'none' };
+    }
+
+    disconnect() {
+        this.peer.disconnect();
+        this.state = { kind: 'none' };
+        this.update();
+    }
+    
+    public get isConnected(): boolean {
+        return this.state
+            ? (this.state.kind === 'client' || this.state.kind === 'host')
+            : false;
+    }
+
+    public get isConnecting(): boolean {
+        return this.state ? this.state.kind === 'connecting' : false;
+    }
+}
+
+export type ConnectionManager = ConnectionHost | ConnectionClient;
+
+export class ConnectionHost extends BaseConnection {
     private clients: Map<string, Peer.DataConnection>;
+    
+    host() {
+        debug('host');
+        this.clients = new Map();
+        this.peer = new Peer({ key: 'ovdtdu9kq9i19k9', debug: 3 });
+        this.state = { kind: 'connecting' };
+        this.update();
+        this.peer.on('connection', conn => {
+            this.clients.set(conn.peer, conn);
+            conn.on('close', () => this.clients.delete(conn.peer));
+            conn.on('data', (data) => this.readMessageOnHost(conn, data));
+        });
+        this.peer.on('open', id => {
+            this.state = { kind: 'host', id: id };
+            this.update();
+        });
+        this.peer.on('disconnected', () => {
+            this.state = { kind: 'none' };
+            this.update();
+        });
+    }
 
     readMessageOnHost(conn: Peer.DataConnection, data: {}) {
         debug('host data: %s => %O', conn.peer, data);
@@ -66,26 +111,16 @@ export class ConnectionManager {
         }
     }
 
-    host() {
-        debug('host');
-        this.clients = new Map();
-        this.peer = new Peer({ key: 'ovdtdu9kq9i19k9', debug: 3 });
-        this.state = { kind: 'connecting' };
-        this.update();
-        this.peer.on('connection', conn => {
-            this.clients.set(conn.peer, conn);
-            conn.on('close', () => this.clients.delete(conn.peer));
-            conn.on('data', (data) => this.readMessageOnHost(conn, data));
-        });
-        this.peer.on('open', id => {
-            this.state = { kind: 'host', id: id };
-            this.update();
-        });
-        this.peer.on('disconnected', () => {
-            this.state = { kind: 'none' };
-            this.update();
+    sendAll() {
+        this.clients.forEach(conn => {
+            conn.send(SoundManager.state);
         });
     }
+}
+export class ConnectionClient extends BaseConnection {
+    peer: Peer;
+    state: ConnectionState;
+    private connection: Peer.DataConnection;
 
     join(id: string) {
         debug(`join ${id}`);
@@ -114,12 +149,6 @@ export class ConnectionManager {
         });
     }
 
-    sendAll() {
-        this.clients.forEach(conn => {
-            conn.send(SoundManager.state);
-        });
-    }
-
     send(m: MessageType, senderId: string) {
         let msg: Message = {
             v: m,
@@ -127,22 +156,6 @@ export class ConnectionManager {
         };
         this.connection.send(msg);
     }
-
-    disconnect() {
-        this.peer.disconnect();
-        this.update();
-    }
-
-    constructor(private update: (() => void)) {
-        this.state = { kind: 'none' };
-    }
-
-    public get isConnected(): boolean {
-        return this.state
-            ? (this.state.kind === 'client' || this.state.kind === 'host')
-            : false;
-    }
-    public get isConnecting(): boolean { return this.state ? this.state.kind === 'connecting' : false; }
 
     // client
     sendAddInstrument(id: InstrumentId) {

@@ -13,15 +13,15 @@ export abstract class Sequencer extends Core.InstrumentTyped<Core.MessageSequenc
     protected abstract get noteNames(): string[];
     private part: Tone.Loop;
     protected abstract playNote(note: string, time: Tone.Time): void;
-    
+
     applyMessage(m: Core.MessageSequence) {
         debug('apply %O %i', m, this.times);
         this.partition = m.notes;
     }
-    
+
     mount(): void {
         debug('mount %s', this.id);
-        
+
         let indices = [];
         for (var index = 0; index < this.times; index++) { indices.push(index); }
         this.part = new Tone.Sequence(
@@ -35,8 +35,8 @@ export abstract class Sequencer extends Core.InstrumentTyped<Core.MessageSequenc
                 }
 
                 for (var i = 0; i < column.length; i++) {
-                        // slightly randomized velocities
-                        this.playNote(column[i], time);
+                    // slightly randomized velocities
+                    this.playNote(column[i], time);
                 }
             },
             indices, `${this.times}n`
@@ -44,7 +44,7 @@ export abstract class Sequencer extends Core.InstrumentTyped<Core.MessageSequenc
 
         this.part.start(0);
     }
-    
+
     unmount(): void {
         debug('unmount %s', this.id);
         this.part.stop();

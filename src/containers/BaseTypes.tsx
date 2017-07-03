@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ConnectionManager } from '../containers/ConnectionManager';
+import { ConnectionClient } from '../containers/ConnectionManager';
 import { Client } from '../components/Connection';
 
 import * as Debug from 'debug';
@@ -31,7 +31,7 @@ export interface Message {
 
 // instruments
 
-export type InstrumentCreator = (conn: ConnectionManager | undefined) => Instrument;
+export type InstrumentCreator = (conn: Readonly<ConnectionClient> | undefined) => Instrument;
 
 export interface Instrument {
     id: InstrumentId;
@@ -42,8 +42,8 @@ export interface Instrument {
 
 export abstract class InstrumentTyped<T extends MessageBase> implements Instrument {
     id: InstrumentId;
-    protected conn: ConnectionManager | undefined;
-    constructor(id: InstrumentId, conn: ConnectionManager | undefined) {
+    protected conn: Readonly<ConnectionClient> | undefined;
+    constructor(id: InstrumentId, conn: Readonly<ConnectionClient> | undefined) {
         this.id = id;
         this.conn = conn;
      }

@@ -11,7 +11,7 @@ import './App.css';
 // import Peer from 'peerjs';
 
 import { Host } from './components/Connection';
-import { ConnectionManager } from './containers/ConnectionManager';
+import * as Conn from './containers/ConnectionManager';
 import { TransportComponent } from './containers/Sound';
 import { Workspace } from './containers/Workspace';
 
@@ -47,13 +47,13 @@ interface HostProps extends RouteComponentProps<{}> {
 }
 
 interface JoinProps extends RouteComponentProps<{ id: string }> {
-  conn: ConnectionManager;
 }
-class JoinPage extends React.Component<JoinProps, {}> {
+class JoinPage extends React.Component<JoinProps, Conn.ConnectionClient> {
   componentWillMount() {
+    this.state = new Conn.ConnectionClient(() => this.forceUpdate());
     let id = this.props.match.params.id;
-    if (this.props.conn.state.kind === 'none') {
-      this.props.conn.join(id);
+    if (this.state.state.kind === 'none') {
+      this.state.join(id);
     }
   }
 
@@ -61,23 +61,23 @@ class JoinPage extends React.Component<JoinProps, {}> {
     let id = this.props.match.params.id;
 
     var x: JSX.Element;
-    switch (this.props.conn.state.kind) {
+    switch (this.state.state.kind) {
       case 'connecting':
         x = <span>Connecting...</span>;
         break;
       case 'client':
         x = (
           <div>
-            <button onClick={() => this.props.conn.disconnect()}>Disconnect</button>
-            <span>JOIN {id} {this.props.conn.state.kind}</span>
-            {/*<button onClick={() => this.props.conn.send({})}>Send</button>*/}
-            <Workspace conn={this.props.conn} />
+            <button onClick={() => this.state.disconnect()}>Disconnect</button>
+            <span>JOIN {id} {this.state.state.kind}</span>
+            {/*<button onClick={() => this.state.send({})}>Send</button>*/}
+            <Workspace conn={this.state} />
           </div>
         );
 
         break;
       default:
-        x = <span>Unknown state: {this.props.conn.state.kind}</span>;
+        x = <span>Unknown state: {this.state.state.kind}</span>;
         break;
     }
 
@@ -89,11 +89,30 @@ class JoinPage extends React.Component<JoinProps, {}> {
   }
 }
 
-class App extends React.Component<{}, ConnectionManager> {
+class HostPage extends React.Component<HostProps, Conn.ConnectionHost> {
+  componentWillMount() {
+    this.state = new Conn.ConnectionHost(() => this.forceUpdate());
+  }
+  render() { 
+    let x = this.state.isConnected
+      ? displayConnectedHost(this.state)
+      : <button onClick={() => this.state.host()}>Host</button>;
+
+    return (
+      <div>
+        {x}
+        <p>HOST {JSON.stringify(this.props)}</p>
+        <TransportComponent forceUpdate={() => this.forceUpdate()}/>
+      </div>
+    );
+  }
+}
+
+class App extends React.Component<{}, Conn.ConnectionManager> {
 
   constructor(props: {}) {
     super(props);
-    this.state = new ConnectionManager(() => this.forceUpdate());
+    // this.state = new ConnectionManager(() => this.forceUpdate());
 
     nx.skin('light-blue');
     // nx.sendsTo(function (d: {}) { debug(this, d); });
@@ -111,30 +130,15 @@ class App extends React.Component<{}, ConnectionManager> {
             {/*<img src={logo} className="App-logo" alt="logo" />*/}
             <h2>AudioGraph</h2>
           </div>
-          <Route path="/join/:id" component={this.joinPage} />
-          <Route exact={true} path="/" component={this.hostPage} />
+          <Route path="/join/:id" component={JoinPage} />
+          <Route exact={true} path="/" component={HostPage} />
         </div>
       </Router>
     );
   }
-
-  private joinPage: React.SFC<JoinProps> = (props: JoinProps) => <JoinPage conn={this.state} {...props} />;
-  private hostPage: React.SFC<HostProps> = (props: HostProps) => {
-    let x = this.state.isConnected
-      ? displayConnected(this.state)
-      : <button onClick={() => this.state.host()}>Host</button>;
-
-    return (
-      <div>
-        {x}
-        <p>HOST {JSON.stringify(props)}</p>
-        <TransportComponent forceUpdate={() => this.forceUpdate()}/>
-      </div>
-    );
-  }
 }
 
-function displayConnected(state: Readonly<ConnectionManager>): JSX.Element {
+function displayConnectedHost(state: Readonly<Conn.ConnectionHost>): JSX.Element {
   return (
     <div>
       <button onClick={() => state.disconnect()}>Disconnect</button>
