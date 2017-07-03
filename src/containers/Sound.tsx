@@ -1,12 +1,12 @@
 import * as Tone from 'tone';
 import * as React from 'react';
 
-import { ConnectionManager } from '../containers/ConnectionManager';
-import * as Core from '../containers/BaseTypes';
-import { InstrumentId } from '../containers/BaseTypes';
+import { ConnectionManager } from './ConnectionManager';
+import * as Core from './BaseTypes';
+import { InstrumentId } from './BaseTypes';
 
 import * as Debug from 'debug';
-import { Drums, Drums2, Osc } from '../containers/instruments';
+import { Drums, Drums2, Osc } from './instruments';
 var debug = Debug('AudioGraph.Sound');
 
 interface Newable {
@@ -95,28 +95,6 @@ export var SoundManager = new class {
         }
 
         (i as Core.InstrumentTyped<T>).applyMessage(m);
-    }
-};
-
-export var BandMember = new class {
-    private instruments: Core.Instrument[] = [];
-    get activeInstruments(): Readonly<Core.Instrument[]> { return this.instruments; }
-
-    addInstrument(id: InstrumentId, conn: ConnectionManager) {
-        let instr = SoundManager.getInstrument(id, conn);
-        this.instruments.push(instr);
-        conn.sendAddInstrument(id);
-        // send mount message
-    }
-
-    removeInstrument(id: InstrumentId, conn: ConnectionManager) {
-        let i = this.instruments.findIndex(x => x.id === id);
-        if (i === -1) {
-            debug('Could not remove not added instrument: %s', id);
-            return;
-        }
-        this.instruments.splice(i, 1);
-        conn.sendRemoveInstrument(id);
     }
 };
 

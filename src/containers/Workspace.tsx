@@ -1,6 +1,7 @@
 import * as React from 'react';
 // import { NexusUICanvas } from '../NexusUICanvas';
-import { SoundManager, BandMember } from '../containers/Sound';
+import { SoundManager } from './Sound';
+import { BandMember } from './BandMember';
 
 import { ConnectionManager } from '../containers/ConnectionManager';
 import { Instrument } from '../containers/BaseTypes';
