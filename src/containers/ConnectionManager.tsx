@@ -41,7 +41,7 @@ export class ConnectionHost extends BaseConnection {
     host() {
         debug('host');
         this.clients = new Map();
-        this.peer = new Peer({ key: 'ovdtdu9kq9i19k9', debug: 3 });
+        this.peer = new Peer({ debug: 3, host: 'audiograph.herokuapp.com', port: 443, secure: true });
         this.state = { kind: 'connecting' };
         this.update();
         this.peer.on('connection', conn => {
@@ -124,7 +124,7 @@ export class ConnectionClient extends BaseConnection {
 
     join(id: string) {
         debug(`join ${id}`);
-        this.peer = new Peer({ key: 'ovdtdu9kq9i19k9', debug: 3 });
+        this.peer = new Peer({ debug: 3, host: 'audiograph.herokuapp.com', port: 443, secure: true });
         this.state = { kind: 'connecting' };
         this.update();
         this.connection = this.peer.connect(id);
