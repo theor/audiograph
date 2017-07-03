@@ -24,11 +24,14 @@ build:
   steps:
     # A step that executes `npm install` command
     - npm-install
+    - script:
+        name: typescript install
+        code: npm install -g typescript
     # A step that executes `npm test` command
     - script:
         name: build
         code: |
-          npm run tsc -p tsconfig.json
+          tsc -p tsconfig.json
     - script:
         name: build-release
         code: |
