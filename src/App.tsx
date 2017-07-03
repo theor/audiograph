@@ -49,7 +49,7 @@ interface HostProps extends RouteComponentProps<{}> {
 interface JoinProps extends RouteComponentProps<{ id: string }> {
   conn: ConnectionManager;
 }
-class JoinPage extends React.Component<JoinProps, null> {
+class JoinPage extends React.Component<JoinProps, {}> {
   componentWillMount() {
     let id = this.props.match.params.id;
     if (this.props.conn.state.kind === 'none') {

@@ -4,12 +4,11 @@
   "private": true,
   "dependencies": {
     "@types/debug": "0.0.29",
-    "@types/jest": "^20.0.1",
-    "@types/node": "^8.0.1",
-    "@types/react": "^15.0.30",
-    "@types/react-dom": "^15.5.0",
-    "@types/react-router-dom": "^4.0.4",
-    "@types/tone": "https://github.com/theor/TypeScript.git",
+    "@types/jest": "^20.0.2",
+    "@types/node": "^8.0.7",
+    "@types/react": "^15.0.34",
+    "@types/react-dom": "^15.5.1",
+    "@types/react-router-dom": "^4.0.5",
     "debug": "^2.6.8",
     "peerjs": "^0.3.14",
     "react": "^15.6.1",
@@ -19,7 +18,7 @@
     "typescript-tone": "github:theor/TypeScript"
   },
   "devDependencies": {
-    "react-scripts-ts": "2.2.0"
+    "react-scripts-ts": "^2.3.2"
   },
   "scripts": {
     "start": "react-scripts-ts start",
