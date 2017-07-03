@@ -5,11 +5,14 @@ import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
 import * as Tone from 'tone';
-(document as any).Tone = Tone;
 
 // tslint:disable-next-line:no-any
-(localStorage as any).debug = 'AudioGraph,AudioGraph.*,AudioGraph:*';
-(localStorage as any).debug = '*';
+(document as any).Tone = Tone;
+
+interface DebugStorage { debug: string; }
+let ds = localStorage as {} as DebugStorage;
+ds!.debug = 'AudioGraph,AudioGraph.*,AudioGraph:*';
+ds!.debug = '*';
 
 // Tone.Transport.schedule(t => polySynth.triggerAttackRelease('C2', '8n', t), 2);
 // Tone.Transport.schedule(t => polySynth.triggerAttackRelease('C2', '8n', t, 2), '0:1');

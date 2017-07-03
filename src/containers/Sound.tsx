@@ -1,14 +1,12 @@
 import * as Tone from 'tone';
 import * as React from 'react';
 
-(document as any).Tone2 = Tone;
-
 import { ConnectionManager } from '../containers/ConnectionManager';
 import * as Core from '../containers/BaseTypes';
 import { InstrumentId } from '../containers/BaseTypes';
 
 import * as Debug from 'debug';
-import { Drums, Drums2, Osc } from '../containers/instruments/Drums';
+import { Drums, Drums2, Osc } from '../containers/instruments';
 var debug = Debug('AudioGraph.Sound');
 
 interface Newable {
@@ -143,4 +141,4 @@ export class TransportComponent extends React.Component<Props, { t: Tone.Transpo
             </div>
         );
     }
-};
+}

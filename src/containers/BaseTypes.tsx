@@ -53,14 +53,14 @@ export abstract class InstrumentTyped<T extends MessageBase> implements Instrume
     abstract unmount(): void;
     
     send(m: T): void {
-        let mm = m as any as MessageType;
+        let mm = m as {} as MessageType;
         debug('double convert message: %O -> %O', m, mm);
         this.conn!.send(mm, (this.conn!.state as Client).id);
     }
 }
 export class BlankInstr extends InstrumentTyped<MessageSequence> {
     // createUI(): JSX.Element { return <br/> }
-    applyMessage(m: MessageSequence) {}
-    mount(): void {}
-    unmount(): void {}
+    applyMessage(m: MessageSequence) { debug('blank apply %O', m); }
+    mount(): void { debug('blank mount'); }
+    unmount(): void { debug('blank unmount'); }
 }
