@@ -44,7 +44,8 @@
     "webpack",
     "jest",
     "src/setupTests.ts",
-    "src/types"
+    "src/types",
+    "public"
   ],
   "types": [
     "typePatches"
