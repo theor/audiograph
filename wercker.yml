@@ -28,7 +28,7 @@ build:
     - script:
         name: build
         code: |
-          tsc -p tsconfig.json
+          npm run tsc -p tsconfig.json
     - script:
         name: build-release
         code: |
