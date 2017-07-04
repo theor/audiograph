@@ -4,11 +4,6 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
-import * as Tone from 'tone';
-
-// tslint:disable-next-line:no-any
-(document as any).Tone = Tone;
-
 interface DebugStorage { debug: string; }
 let ds = localStorage as {} as DebugStorage;
 ds!.debug = 'AudioGraph,AudioGraph.*,AudioGraph:*';

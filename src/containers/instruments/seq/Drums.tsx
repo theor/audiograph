@@ -1,6 +1,7 @@
 // import * as Core from '../../containers/BaseTypes';
 
-import * as Tone from 'tone';
+// import * as Tone from 'tone';
+import Tone = require('tone');
 // import * as Debug from 'debug';
 // var debug = Debug('AudioGraph.Sound');
 
