@@ -6,6 +6,7 @@ import * as Debug from 'debug';
 
 import { InstrumentId, MessageType, Message } from '../containers/BaseTypes';
 import * as Core from '../containers/BaseTypes';
+import * as Tone from 'tone';
 var debug = Debug('AudioGraph:Connection');
 
 abstract class BaseConnection {
@@ -110,6 +111,16 @@ export class ConnectionHost extends BaseConnection {
                 break;
         }
     }
+    
+    syncAll() {
+        let msg: Message = {
+            v: { kind: 'sync', t: new Date().getTime() },
+            senderId: this.peer.id
+        };
+        this.clients.forEach(conn => {
+            conn.send(msg);
+        });
+    }
 
     sendAll() {
         this.clients.forEach(conn => {
@@ -129,9 +140,7 @@ export class ConnectionClient extends BaseConnection {
         this.update();
         this.connection = this.peer.connect(id);
         let self = this;
-        this.connection.on('data', data => {
-            debug('data: %O', data);
-        });
+        this.connection.on('data', data => { this.readMessageOnClient(data); });
         this.connection.on('error', data => {
             debug('error: %O', data);
             this.state = { kind: 'none' };
@@ -164,5 +173,24 @@ export class ConnectionClient extends BaseConnection {
 
     sendRemoveInstrument(id: InstrumentId) {
         this.send({ kind: 'remInstr', instr: id }, this.peer.id);
+    }
+
+    readMessageOnClient(data: {}) {
+        debug('data: %O', data);
+        let m = data as Core.Message;
+        if (!m || !m.v) {
+            debug('client received data is not a Message');
+            return;
+        }
+        if (m.v.kind === 'sync') {
+            let now = new Date().getTime();
+            let delta = now - m.v.t;
+            let deltaSeconds = -delta / 1000.0;
+            debug(`sync: start ${m.v.t} now ${now} delta ${delta} ds ${deltaSeconds}`);
+            Tone.Transport.start(deltaSeconds);
+        } else {
+            debug(`unknown client message: ${m.v.kind}`);
+            return;
+        }
     }
 }

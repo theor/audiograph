@@ -4,7 +4,7 @@
 // var debug = Debug('AudioGraph.Sound');
 import * as Tone from 'tone';
 import * as React from 'react';
-import { NexusUICanvas, NxWidget, NxMatrix } from '../../../NexusUICanvas';
+import { NexusUICanvas, NxWidget, NxMultitouch } from '../../../NexusUICanvas';
 
 import { Timed } from './Timed';
 
@@ -37,7 +37,7 @@ export class Osc extends Timed {
     }
     
     protected playNote(note: string, time: Tone.Time): void {
-        this.synth.triggerAttackRelease(note, '16n');
+        this.synth.triggerAttackRelease(note, '16n', time);
     }
 
     createUI(): JSX.Element {
@@ -47,10 +47,10 @@ export class Osc extends Timed {
     }
     
     private setup(w: NxWidget) {
-        (w as NxMatrix).mode = 'matrix';
+        (w as NxMultitouch).mode = 'matrix';
         w.on('*', data => {
             if ((w as NxWidget).clicked) {
-                this.send({ kind: 'timed', note: 'C4' });
+                this.send({ kind: 'timed', note: 'C4', time: Tone.Transport.seconds });
             }
         });
     }

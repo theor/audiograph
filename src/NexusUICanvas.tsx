@@ -48,6 +48,10 @@ export interface NxMatrix extends NxWidget {
   bpm: number;
 }
 
+export interface NxMultitouch extends NxWidget {
+  mode: 'matrix' | 'default';
+}
+
 export interface WidgetAttributes extends Attributes {
   val: any;
   colors?: {
