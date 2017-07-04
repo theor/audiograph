@@ -6,6 +6,7 @@ import * as Debug from 'debug';
 
 import { InstrumentId, MessageType, Message } from '../containers/BaseTypes';
 import * as Core from '../containers/BaseTypes';
+import * as Tone from 'tone';
 var debug = Debug('AudioGraph:Connection');
 
 export class ConnectionManager {
@@ -114,12 +115,31 @@ export class ConnectionManager {
 
     readMessageOnClient(data: {}) {
         debug('data: %O', data);
+        let m = data as Core.Message;
+        if (!m || !m.v) {
+            debug('client received data is not a Message');
+            return;
+        }
+        if (m.v.kind === 'sync') {
+            let now = new Date().getTime();
+            let delta = now - m.v.t;
+            let deltaSeconds = -delta / 1000.0;
+            debug(`sync: start ${m.v.t} now ${now} delta ${delta} ds ${deltaSeconds}`);
+            Tone.Transport.start(deltaSeconds);
+        } else {
+            debug(`unknown client message: ${m.v.kind}`);
+            return;
+        }
 
     }
 
     syncAll() {
+        let msg: Message = {
+            v: { kind: 'sync', t: new Date().getTime() },
+            senderId: this.peer.id
+        };
         this.clients.forEach(conn => {
-            conn.send(SoundManager.state);
+            conn.send(msg);
         });
     }
 

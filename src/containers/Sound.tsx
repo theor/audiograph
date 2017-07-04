@@ -131,10 +131,10 @@ export class TransportComponent extends React.Component<Props, { t: Tone.Transpo
         return true;
     }
     render() {
-        debug('render Transport, %s', this.state.t);
+        // debug('render Transport, %s', this.state.t);
         let onClick = () => {
             let newState = SoundManager.playPause();
-            debug('setState Transport, %s', this.state.t, newState);
+            // debug('setState Transport, %s', this.state.t, newState);
             this.setState({ t: newState });
             if (this.props.conn) {
                 this.props.conn.syncAll();

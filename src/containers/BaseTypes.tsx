@@ -11,10 +11,10 @@ export interface MessageBase { kind: string; }
 
 export interface MessageSequence extends MessageBase { kind: 'sequence'; notes: Tone.Note[][]; subdivision: Tone.Time; }
 
-export interface MessageTimed extends MessageBase { kind: 'timed'; note: Tone.Note; }
+export interface MessageTimed extends MessageBase { kind: 'timed'; note: Tone.Note; time: number; }
 export interface MessageAddInstrument extends MessageBase { kind: 'addInstr'; instr: InstrumentId; }
 export interface MessageRemoveInstrument extends MessageBase { kind: 'remInstr'; instr: InstrumentId; }
-export interface MessageSync extends MessageBase { kind: 'sync'; t: Date; }
+export interface MessageSync extends MessageBase { kind: 'sync'; t: number; }
 
 export type MessageType =
     MessageSequence |

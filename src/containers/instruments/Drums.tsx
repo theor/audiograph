@@ -9,7 +9,7 @@ var debug = Debug('AudioGraph.Sound');
 abstract class Timed extends Core.InstrumentTyped<Core.MessageTimed> {
     applyMessage(m: Core.MessageTimed) {
         debug('apply %O %i', m, this);
-        this.playNote(m.note, '+0.1');
+        this.playNote(m.note, m.time);
         // this.partition = m.notes;
     }
 
@@ -53,7 +53,7 @@ export class Osc extends Timed {
     }
 
     protected playNote(note: string, time: Tone.Time): void {
-        this.synth.triggerAttackRelease(note, '16n');
+        this.synth.triggerAttackRelease(note, '16n', time);
     }
 
     createUI(): JSX.Element {
@@ -66,7 +66,7 @@ export class Osc extends Timed {
         (w as NxMultitouch).mode = 'matrix';
         w.on('*', data => {
             if (w.clicked) {
-                this.send({ kind: 'timed', note: 'C4' });
+                this.send({ kind: 'timed', note: 'C4', time: Tone.Transport.seconds });
             }
         });
     }
