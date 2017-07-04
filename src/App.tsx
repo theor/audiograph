@@ -83,6 +83,7 @@ class JoinPage extends React.Component<JoinProps, Conn.ConnectionClient> {
 
     return (
       <div>
+         <TransportComponent forceUpdate={() => this.forceUpdate()}/>
         {x}
       </div>
     );
@@ -102,7 +103,7 @@ class HostPage extends React.Component<HostProps, Conn.ConnectionHost> {
       <div>
         {x}
         <p>HOST {JSON.stringify(this.props)}</p>
-        <TransportComponent forceUpdate={() => this.forceUpdate()}/>
+        <TransportComponent forceUpdate={() => this.forceUpdate()} conn={this.state}/>
       </div>
     );
   }
