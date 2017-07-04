@@ -14,6 +14,7 @@ import { Host } from './components/Connection';
 import * as Conn from './containers/ConnectionManager';
 import { TransportComponent } from './containers/Sound';
 import { Workspace } from './containers/Workspace';
+import * as RB from 'react-bootstrap-typescript';
 
 // import * as Debug from 'debug';
 // var debug = Debug('AudioGraph');
@@ -83,7 +84,7 @@ class JoinPage extends React.Component<JoinProps, Conn.ConnectionClient> {
 
     return (
       <div>
-         <TransportComponent forceUpdate={() => this.forceUpdate()}/>
+        <TransportComponent forceUpdate={() => this.forceUpdate()} />
         {x}
       </div>
     );
@@ -94,7 +95,7 @@ class HostPage extends React.Component<HostProps, Conn.ConnectionHost> {
   componentWillMount() {
     this.state = new Conn.ConnectionHost(() => this.forceUpdate());
   }
-  render() { 
+  render() {
     let x = this.state.isConnected
       ? displayConnectedHost(this.state)
       : <button onClick={() => this.state.host()}>Host</button>;
@@ -103,7 +104,7 @@ class HostPage extends React.Component<HostProps, Conn.ConnectionHost> {
       <div>
         {x}
         <p>HOST {JSON.stringify(this.props)}</p>
-        <TransportComponent forceUpdate={() => this.forceUpdate()} conn={this.state}/>
+        <TransportComponent forceUpdate={() => this.forceUpdate()} conn={this.state} />
       </div>
     );
   }
@@ -127,10 +128,31 @@ class App extends React.Component<{}, Conn.ConnectionManager> {
     return (
       <Router>
         <div className="App">
-          <div className="App-header">
-            {/*<img src={logo} className="App-logo" alt="logo" />*/}
-            <h2>AudioGraph</h2>
-          </div>
+
+          <RB.Navbar inverse toggleButton>
+            <RB.Navbar.Header>
+              <RB.Navbar.Brand>
+                <a href="#">AudioGraph</a>
+              </RB.Navbar.Brand>
+            </RB.Navbar.Header>
+            <RB.Navbar.Collapse>
+              <RB.Nav>
+                <RB.NavItem eventKey={1} href="#">Link</RB.NavItem>
+                <RB.NavItem eventKey={2} href="#">Link</RB.NavItem>
+                <RB.NavDropdown eventKey={3} title="Dropdown" id="basic-nav-dropdown">
+                  <RB.MenuItem eventKey={3.1}>Action</RB.MenuItem>
+                  <RB.MenuItem eventKey={3.2}>Another action</RB.MenuItem>
+                  <RB.MenuItem eventKey={3.3}>Something else here</RB.MenuItem>
+                  <RB.MenuItem divider />
+                  <RB.MenuItem eventKey={3.3}>Separated link</RB.MenuItem>
+                </RB.NavDropdown>
+              </RB.Nav>
+              <RB.Nav pullRight>
+                <RB.NavItem eventKey={1} href="#">Link Right</RB.NavItem>
+                <RB.NavItem eventKey={2} href="#">Link Right</RB.NavItem>
+              </RB.Nav>
+            </RB.Navbar.Collapse>
+          </RB.Navbar>
           <Route path="/join/:id" component={JoinPage} />
           <Route exact={true} path="/" component={HostPage} />
         </div>
@@ -142,9 +164,9 @@ class App extends React.Component<{}, Conn.ConnectionManager> {
 function displayConnectedHost(state: Readonly<Conn.ConnectionHost>): JSX.Element {
   return (
     <div>
-      <button onClick={() => state.disconnect()}>Disconnect</button>
+      <RB.Button bsStyle="primary" onClick={() => state.disconnect()}>Disconnect</RB.Button>
       <Link to={'/join/' + (state.state as Host).id}>Join session</Link>: {(state.state as Host).id}
-      <button onClick={() => state.sendAll()}>Send all</button>
+      <RB.Button onClick={() => state.sendAll()}>Send all</RB.Button>
     </div>
   );
 }
