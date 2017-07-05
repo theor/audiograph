@@ -129,7 +129,8 @@ class App extends React.Component<{}, Conn.ConnectionManager> {
       <Router>
         <div className="App">
 
-          <RB.Navbar inverse toggleButton>
+          <RB.Navbar inverse toggleButton bsStyle="default" className="navbar-default">
+            <RB.Navbar.Toggle />
             <RB.Navbar.Header>
               <RB.Navbar.Brand>
                 <a href="#">AudioGraph</a>
@@ -153,8 +154,10 @@ class App extends React.Component<{}, Conn.ConnectionManager> {
               </RB.Nav>
             </RB.Navbar.Collapse>
           </RB.Navbar>
-          <Route path="/join/:id" component={JoinPage} />
-          <Route exact={true} path="/" component={HostPage} />
+          <div className="container">
+            <Route path="/join/:id" component={JoinPage} />
+            <Route exact={true} path="/" component={HostPage} />
+          </div>
         </div>
       </Router>
     );
