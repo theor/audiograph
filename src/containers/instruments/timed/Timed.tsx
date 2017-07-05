@@ -10,7 +10,7 @@ export abstract class Timed extends Core.InstrumentTyped<Core.MessageTimed> {
         // this.partition = m.notes;
     }
     
-    mount(): void {
+    mount(tone: Core.Tone): void {
         debug('mount %s', this.id);
     }
     

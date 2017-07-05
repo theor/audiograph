@@ -1,4 +1,5 @@
-import * as Tone from 'tone';
+import Tone = require('tone');
+// console.log(typeof Tone);
 import * as React from 'react';
 
 import { ConnectionClient } from './ConnectionManager';
@@ -13,9 +14,14 @@ interface Newable {
     new (id: string, conn: Readonly<ConnectionClient> | undefined): Core.Instrument;
 }
 
+// namespace Tone {
+//     export type TransportState = 'started' | 'stopped' | 'paused';
+// }
+
 export var SoundManager = new class {
     library: Map<InstrumentId, Core.InstrumentCreator>;
     band: Map<string, Core.Instrument>;
+    _Tone: typeof Tone;
     constructor() {
         this.library = new Map();
         let add = (id: string, t: Newable) => this.library.set(id, conn => new t(id, conn));
@@ -23,20 +29,27 @@ export var SoundManager = new class {
         add('Osc sequencer', Drums2);
         add('Free Osc', Osc);
         this.band = new Map();
-        
-        Tone.Transport.loopStart = 0;
-        Tone.Transport.loopEnd = '1m';
-        Tone.Transport.loop = true;
+    }
+    init() {
+        this._Tone = require('tone');
+        this._Tone.Transport.loopStart = 0;
+        this._Tone.Transport.loopEnd = '1m';
+        this._Tone.Transport.loop = true;
+
     }
     playPause(): Tone.TransportState {
-        switch (Tone.Transport.state) {
+        // return 'stopped';
+        switch (this._Tone.Transport.state) {
             case 'started':
-                Tone.Transport.stop(0); return 'stopped';
+                this._Tone.Transport.stop(0); return 'stopped';
             default:
-                Tone.Transport.start('+0.1'); return 'started';
+                this._Tone.Transport.start('+0.1'); return 'started';
         }
     }
-    get state(): Tone.TransportState { return Tone.Transport.state; }
+    get state(): Tone.TransportState { 
+        return this._Tone ? this._Tone.Transport.state : 'stopped';
+        // return 'stopped';
+     }
 
     getBandInstrument(peer: string): Core.Instrument | undefined {
         return this.band.get(peer);
@@ -62,7 +75,7 @@ export var SoundManager = new class {
 
         this.band.set(peer, instr);
         debug('picked instr: %O for peer %s', instr, peer);
-        instr.mount();
+        instr.mount(require('tone'));
     }
 
     applyMessage(m: Core.MessageType, peerId: string) {

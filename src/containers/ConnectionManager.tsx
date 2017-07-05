@@ -40,6 +40,7 @@ export class ConnectionHost extends BaseConnection {
     
     host() {
         debug('host');
+        SoundManager.init();
         this.clients = new Map();
         this.peer = new Peer({ debug: 3, host: 'audiograph.herokuapp.com', port: 443, secure: true });
         this.state = { kind: 'connecting' };

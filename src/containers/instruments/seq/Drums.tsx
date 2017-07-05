@@ -1,8 +1,8 @@
 // import * as Core from '../../containers/BaseTypes';
 
 // import * as Tone from 'tone';
-import Tone = require('tone');
 // import * as Debug from 'debug';
+import * as Core from '../../BaseTypes';
 // var debug = Debug('AudioGraph.Sound');
 
 import {Sequencer} from './Sequencer';
@@ -19,13 +19,14 @@ export class Drums extends Sequencer {
     protected get noteNames() { return Object.keys(this.mapping); }
 
     protected playNote(note: string, time: Tone.Time) { 
+        // debug(this.player);
         this.player.start(note, time);
     }
 
-    mount(): void {
-        this.player = new Tone.MultiPlayer({urls: this.mapping});
+    mount(tone: Core.Tone): void {
+        this.player = new tone.MultiPlayer({urls: this.mapping});
         this.player.toMaster();
-        super.mount();
+        super.mount(tone);
     }
 }
 export class Drums2 extends Sequencer {
@@ -38,9 +39,9 @@ export class Drums2 extends Sequencer {
                         this.polySynth.triggerAttackRelease(note, '32n', time, vel);
     }
 
-    mount(): void {
-        this.polySynth = new Tone.PolySynth(4, () => new Tone.Synth());
+    mount(tone: Core.Tone): void {
+        this.polySynth = new tone.PolySynth(4, () => new tone.Synth());
         this.polySynth.toMaster();
-        super.mount();
+        super.mount(tone);
     }
 }

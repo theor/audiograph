@@ -1,8 +1,7 @@
-// import * as Core from '../../../containers/BaseTypes';
+import * as Core from '../../../containers/BaseTypes';
 
 // import * as Debug from 'debug';
 // var debug = Debug('AudioGraph.Sound');
-import * as Tone from 'tone';
 import * as React from 'react';
 import { NexusUICanvas, NxWidget, NxMatrix } from '../../../NexusUICanvas';
 
@@ -10,9 +9,9 @@ import { Timed } from './Timed';
 
 export class Osc extends Timed {
     synth: Tone.MonoSynth;
-    mount(): void {
-        super.mount();
-        this.synth = new Tone.MonoSynth({
+    mount(tone: Core.Tone): void {
+        super.mount(tone);
+        this.synth = new tone.MonoSynth({
             'portamento' : 0.01,
             'oscillator' : {
                 'type' : 'square'

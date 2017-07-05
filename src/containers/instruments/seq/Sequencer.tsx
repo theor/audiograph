@@ -3,7 +3,6 @@ import * as Core from '../../../containers/BaseTypes';
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph.Sound');
 
-import * as Tone from 'tone';
 import * as React from 'react';
 import { NexusUICanvas, NxWidget, NxMatrix } from '../../../NexusUICanvas';
 
@@ -19,12 +18,12 @@ export abstract class Sequencer extends Core.InstrumentTyped<Core.MessageSequenc
         this.partition = m.notes;
     }
 
-    mount(): void {
+    mount(tone: Core.Tone): void {
         debug('mount %s', this.id);
 
         let indices = [];
         for (var index = 0; index < this.times; index++) { indices.push(index); }
-        this.part = new Tone.Sequence(
+        this.part = new tone.Sequence(
             (time: Tone.Time, col: number) => {
                 if (!this.partition) {
                     return;

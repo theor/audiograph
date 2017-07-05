@@ -4,7 +4,9 @@ import { Client } from '../components/Connection';
 
 import * as Debug from 'debug';
 var debug = Debug('AudioGraph:Core');
+import ToneLib = require('tone');
 
+export type Tone = typeof ToneLib;
 export type InstrumentId = string;
 
 export interface MessageBase { kind: string; }
@@ -36,7 +38,7 @@ export type InstrumentCreator = (conn: Readonly<ConnectionClient> | undefined) =
 export interface Instrument {
     id: InstrumentId;
     createUI(): JSX.Element;
-    mount(): void;
+    mount(tone: Tone): void;
     unmount(): void;
 }
 
@@ -49,7 +51,7 @@ export abstract class InstrumentTyped<T extends MessageBase> implements Instrume
      }
     createUI(): JSX.Element { return <span>Unknown  {this.id}</span>; }
     abstract applyMessage(m: T): void;
-    abstract mount(): void;
+    abstract mount(tone: Tone): void;
     abstract unmount(): void;
     
     send(m: T): void {
@@ -61,6 +63,6 @@ export abstract class InstrumentTyped<T extends MessageBase> implements Instrume
 export class BlankInstr extends InstrumentTyped<MessageSequence> {
     // createUI(): JSX.Element { return <br/> }
     applyMessage(m: MessageSequence) { debug('blank apply %O', m); }
-    mount(): void { debug('blank mount'); }
+    mount(tone: Tone): void { debug('blank mount'); }
     unmount(): void { debug('blank unmount'); }
 }
