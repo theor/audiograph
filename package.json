@@ -5,10 +5,10 @@
   "dependencies": {
     "@types/debug": "0.0.29",
     "@types/jest": "^20.0.2",
-    "@types/node": "^8.0.7",
-    "@types/react": "^15.0.34",
+    "@types/node": "^8.0.9",
+    "@types/react": "^15.0.35",
     "@types/react-dom": "^15.5.1",
-    "@types/react-router-dom": "^4.0.5",
+    "@types/react-router-dom": "^4.0.6",
     "debug": "^2.6.8",
     "jest-cli": "^20.0.4",
     "peerjs": "^0.3.14",
